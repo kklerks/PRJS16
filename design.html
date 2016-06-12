@@ -14,7 +14,7 @@
         <a href="javascript:void(0)" onclick="newSheet();" style="padding-left: 20px;">New</a>
         <a href="javascript:void(0)" onclick="saveSheet();">Save</a>
         <a href="javascript:void(0)" onclick="loadSheet();">Load</a>
-        <a href="javascript:void(0)" onclick="helpMenu();" style="float: right; padding-right: 20px;">Help</a>
+        <a href="javascript:void(0)" onclick="openHelp();" style="float: right; padding-right: 20px;">Help</a>
         <a href="javascript:void(0)" onclick="openLogin();" style="float: right;">Log In</a>
         <a href="javascript:void(0)" onclick="openSignup()" style="float: right;">Sign Up</a>
     </nav>
@@ -64,21 +64,14 @@
             </div>
         </form>
     </div>
-    <script>
-        $("#loginDiv").dialog({ autoOpen: false });
-        $("#signupDiv").dialog({ autoOpen: false });
-        function openLogin() {
-            $("#loginDiv").dialog("open");
-        }
-        function closeLogin() {
-            $("#loginDiv").dialog("close");
-        }
-        function openSignup() {
-            $("#signupDiv").dialog("open");
-        }
-        function closeSignup() {
-            $("#signupDiv").dialog("close");
-        }
-    </script>
+
+    <div class="popupDiv" id="helpDiv" title="Help">
+        <div id="helpText"></div>
+        <div id="helpTopics"></div>
+        <button id="helpCloseButton" onclick="closeHelp()">Close</button>
+    </div>
+
+    <script src="popupControl.js"></script>
+    <script src="readHelp.js"></script>
 </body>
 </html>
