@@ -1,0 +1,45 @@
+#componentsToolbar {
+    width: 20%;
+    background-color: rgba(131, 131, 131, 0.4);
+    height: 90%;
+    margin-top: 20px;
+    padding-top: 5%;
+    padding-bottom: 5%;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+}
+nav {
+    background-color: #aaaaaa;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+}
+nav > a {
+    padding-left: 10px;
+    padding-right: 5px;
+}
+nav > a:link {
+    color: black;
+    text-decoration: none;
+}
+nav > a:visited {
+    color: black;
+    text-decoration: none;
+}
+nav > a:hover {
+    color: black;
+    text-decoration: none;
+}
+nav > a:active {
+    color: black;
+    text-decoration: none;
+}
+.popupDiv {
+    text-align: center;
+}
+.formDiv {
+    padding-bottom: 10px;
+}
