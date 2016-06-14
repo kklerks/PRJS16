@@ -24,42 +24,42 @@
     </div>
 
     <div class="popupDiv" id="loginDiv" title="Log In">
-        <form id="loginForm" action="#">
+        <form id="loginForm" action="login.php" method="post">
             <div class="formDiv">
                 <label for="loginUsername">Username: </label>
-                <input type="text" id="loginUsername"/>
+                <input type="text" id="loginUsername" name="loginUsername"/>
             </div>
             <div class="formDiv">
                 <label for="loginPassword">Password: </label>
-                <input type="password" id="loginPassword"/>
+                <input type="password" id="loginPassword" name="loginPassword" />
             </div>
             <div class="formDiv">
-                <input type="button" id="loginButton" value="Log In">
+                <input type="submit" id="loginButton" value="Log In">
                 <input type="button" id="loginCancelButton" value="Cancel" onclick="closeLogin();">
             </div>
         </form>
     </div>
 
     <div class="popupDiv" id="signupDiv" title="Sign Up">
-        <form id="signupForm" action="#">
+        <form id="signupForm" action="register.php" method="post">
             <div class="formDiv">
                 <label for="signupUsername">Username: </label>
-                <input type="text" id="signupUsername"/>
+                <input type="text" id="signupUsername" name="signupUsername" />
             </div>
             <div class="formDiv">
                 <label for="signupEmail">Email: </label>
-                <input type="email" id="signupEmail"/>
+                <input type="email" id="signupEmail" name="signupEmail" />
             </div>
             <div class="formDiv">
                 <label for="signupPassword">Password: </label>
-                <input type="password" id="signupPassword"/>
+                <input type="password" id="signupPassword" name="signupPassword" />
             </div>
             <div class="formDiv">
                 <label for="signupConfirmPassword">Confirm Password: </label>
                 <input type="password" id="signupConfirmPassword"/>
             </div>
             <div class="formDiv">
-                <input type="button" id="signupButton" value="Sign Up">
+                <input type="submit" id="signupButton" value="Sign Up">
                 <input type="button" id="signupCancelButton" value="Cancel" onclick="closeSignup();">
             </div>
         </form>
