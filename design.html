@@ -5,6 +5,7 @@
     <title>Web Sheet Editor</title>
     <link rel="stylesheet" type="text/css" href="design.css">
     <script src="jquery-3.0.0.min.js"></script>
+    <script src="validate.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
@@ -41,22 +42,22 @@
     </div>
 
     <div class="popupDiv" id="signupDiv" title="Sign Up">
-        <form id="signupForm" action="register.php" method="post">
+        <form id="signupForm" action="register.php" method="post" >
             <div class="formDiv">
                 <label for="signupUsername">Username: </label>
-                <input type="text" id="signupUsername" name="signupUsername" />
+                <input type="text" id="signupUsername" name="signupUsername" oninput="check_username(false)" required />
             </div>
             <div class="formDiv">
                 <label for="signupEmail">Email: </label>
-                <input type="email" id="signupEmail" name="signupEmail" />
+                <input type="email" id="signupEmail" name="signupEmail" oninput="check_email(false)" required />
             </div>
             <div class="formDiv">
                 <label for="signupPassword">Password: </label>
-                <input type="password" id="signupPassword" name="signupPassword" />
+                <input type="password" id="signupPassword" name="signupPassword" oninput="check_password_length()"  required />
             </div>
             <div class="formDiv">
                 <label for="signupConfirmPassword">Confirm Password: </label>
-                <input type="password" id="signupConfirmPassword"/>
+                <input type="password" id="signupConfirmPassword" oninput="check_confirm_password()" required />
             </div>
             <div class="formDiv">
                 <input type="submit" id="signupButton" value="Sign Up">
