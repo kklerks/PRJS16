@@ -4,9 +4,13 @@ var minUsername = 3;
 var minPassword = 3;
 
 function check_username_length() {
+	var re = new RegExp("^[A-Za-z0-9]{1,36}$");
         if ($('#signupUsername').val().length < minUsername) {
                 document.getElementById('signupUsername').setCustomValidity('Username must be at least three characters long!');
-                }
+        }
+        else if (!re.test($('#signupUsername').val())) {
+                document.getElementById('signupUsername').setCustomValidity('Username must contain only letters and numbers!');
+        }
         else {
                 document.getElementById('signupUsername').setCustomValidity('');
         }
@@ -19,8 +23,12 @@ function check_email_length() {
 */
 
 function check_password_length() {
+	var re = new RegExp("^[A-Za-z0-9]{1,36}$");
         if ($('#signupPassword').val().length < minPassword) {
                 document.getElementById('signupPassword').setCustomValidity('Password must be at least three characters long!');
+        }
+        else if (!re.test($('#signupPassword').val())) {
+                document.getElementById('signupPassword').setCustomValidity('Password must contain only letters and numbers!');
         }
         else {
                 document.getElementById('signupPassword').setCustomValidity('');
