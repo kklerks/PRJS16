@@ -1,0 +1,19 @@
+#sheetContainer {
+    margin: auto;
+    width:350px;
+    height:500px;
+    background-color:yellow;
+}
+#spawnButton {
+    position: absolute;
+}
+#saveButton {
+    position: absolute;
+    top: 200px;
+}
+.block {
+    position:absolute;
+    width:20px;
+    height:20px;
+    background-color:rebeccapurple;
+}
