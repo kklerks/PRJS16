@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Sheet Editor</title>
+    <link rel="stylesheet" type="text/css" href="design.css">
+    <script src="jquery-3.0.0.min.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+</head>
+<body>
+    <nav>
+        <a href="javascript:void(0)" onclick="newSheet();" style="padding-left: 20px;">New</a>
+        <a href="javascript:void(0)" onclick="saveSheet();">Save</a>
+        <a href="javascript:void(0)" onclick="loadSheet();">Load</a>
+        <a href="javascript:void(0)" onclick="openHelp();" style="float: right; padding-right: 20px;">Help</a>
+        <a href="javascript:void(0)" onclick="openLogin();" style="float: right;">Log In</a>
+        <a href="javascript:void(0)" onclick="openSignup()" style="float: right;">Sign Up</a>
+    </nav>
+
+    <div id="componentsToolbar">
+
+    </div>
+
+    <div class="popupDiv" id="loginDiv" title="Log In">
+        <form id="loginForm" action="#">
+            <div class="formDiv">
+                <label for="loginUsername">Username: </label>
+                <input type="text" id="loginUsername"/>
+            </div>
+            <div class="formDiv">
+                <label for="loginPassword">Password: </label>
+                <input type="password" id="loginPassword"/>
+            </div>
+            <div class="formDiv">
+                <input type="button" id="loginButton" value="Log In">
+                <input type="button" id="loginCancelButton" value="Cancel" onclick="closeLogin();">
+            </div>
+        </form>
+    </div>
+
+    <div class="popupDiv" id="signupDiv" title="Sign Up">
+        <form id="signupForm" action="#">
+            <div class="formDiv">
+                <label for="signupUsername">Username: </label>
+                <input type="text" id="signupUsername"/>
+            </div>
+            <div class="formDiv">
+                <label for="signupEmail">Email: </label>
+                <input type="email" id="signupEmail"/>
+            </div>
+            <div class="formDiv">
+                <label for="signupPassword">Password: </label>
+                <input type="password" id="signupPassword"/>
+            </div>
+            <div class="formDiv">
+                <label for="signupConfirmPassword">Confirm Password: </label>
+                <input type="password" id="signupConfirmPassword"/>
+            </div>
+            <div class="formDiv">
+                <input type="button" id="signupButton" value="Sign Up">
+                <input type="button" id="signupCancelButton" value="Cancel" onclick="closeSignup();">
+            </div>
+        </form>
+    </div>
+
+    <div class="popupDiv" id="helpDiv" title="Help">
+        <div id="helpText"></div>
+        <div id="helpTopics"></div>
+        <button id="helpCloseButton" onclick="closeHelp()">Close</button>
+    </div>
+
+    <script src="popupControl.js"></script>
+    <script src="readHelp.js"></script>
+</body>
+</html>
