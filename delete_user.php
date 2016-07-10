@@ -43,12 +43,12 @@
 
 	// Connect to the databases
 	$dbA = new mysqli($db_host, $db_user, $db_pass, $db_name[0], $db_port[0], $db_socket[0]);
-	$dbB = new mysqli($db_host, $db_user, $db_pass, $db_name[1], $db_port[1], $db_socket[1]);
-
 	if ($dbA->connect_error) {
 		$errors .= "Database A connection failed: " . $dbA->connect_error . "\n";
 		$dbADown = true;
 	}
+
+	$dbB = new mysqli($db_host, $db_user, $db_pass, $db_name[1], $db_port[1], $db_socket[1]);
 	if ($dbB->connect_error) {
 		$errors .= "Database B connection failed: " . $dbB->connect_error . "\n";
 		$dbBDown = true;
@@ -80,8 +80,6 @@
 		$stmt->close();
 	}
 
-	// For when we implement confirmation tokens on database B
-	/*
 	if (!$dbBDown) {
 		$stmt = $dbB->prepare('SELECT c.user_name, u.email FROM confirmation_tokens c, users u WHERE c.user_name = u.user_name AND c.token = ?');
 		$stmt->bind_param("s", $receivedtoken);
@@ -100,7 +98,6 @@
 	
 		$stmt->close();
 	}
-	*/
 	
 	// If the confirmation token is valid we should always find a user associated with it, but just in case
 	if ($user) {
@@ -124,7 +121,7 @@
 			$stmt->close();
 		}
 		else {
-			writeErrorLog("DATABASE A WAS DOWN AT THE MOMENT OF USER DELETION:\nMust remove user $user from Database A users and confirmation_tokens");
+			writeErrorLog("DATABASE A WAS DOWN AT THE MOMENT OF USER DELETION:\nMust remove user $user from Database A users and confirmation_tokens.\n");
 		}
 		if (!$dbBDown) {
 			$stmt = $dbB->prepare('DELETE FROM users WHERE user_name = ?');
@@ -145,17 +142,17 @@
 			$stmt->close();
 		}
 		else {
-			writeErrorLog("DATABASE B WAS DOWN AT THE MOMENT OF USER DELETION:\nMust remove user $user from user and confirmation_tokens in Database B");
+			writeErrorLog("DATABASE B WAS DOWN AT THE MOMENT OF USER DELETION:\nMust remove user $user from user and confirmation_tokens in Database B.\n");
 		}
 	}
 	else {
-		terminate('No user exists associated with the given token', "TOKEN $receivedtoken EXISTS IN DATABASE WITH NO CORRESPONDING USER!");
+		terminate('No user exists associated with the given token', "TOKEN $receivedtoken EXISTS IN DATABASE WITH NO CORRESPONDING USER!\n");
 	}
-	
+
 	echo "<p>The user $user with the email address $email has been removed from the database!</p>";
 	echo '<p>Redirecting to front page...</p>';
 
 	// Redirect to the front page after 5 seconds
 	echo 
-	'<script>setTimeout(function () { window.location.href="index.php"; }, 5000);</script>';
+	'<script>setTimeout(function () { window.location.href="logout.php"; }, 5000);</script>';
 ?>

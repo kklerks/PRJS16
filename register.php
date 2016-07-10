@@ -1,4 +1,22 @@
 <?php
+	function writeErrorLog($str) {
+		if ($str) {
+			$time = new DateTime();
+			file_put_contents('error.log', '[' . $time->format('Y-m-d H:i:s') . ']: ' . $str, FILE_APPEND);
+		}
+	}
+
+	function terminate($msg, $errorMessage = NULL) {
+		writeErrorLog($errorMessage);
+		echo "<p>$msg</p>";
+		echo '<p>Redirecting to front page...</p>';
+
+		// Redirect to the front page after 5 seconds
+		echo 
+		'<script>setTimeout(function () { window.location.href="index.php"; }, 5000);</script>';
+		exit();
+	}
+
 	function validateUsername($str) {
 		return preg_match("/^[A-Za-z0-9]{1,36}$/", $str);
 	}
@@ -22,91 +40,139 @@
 		$db_port = array(5313, 5316);
 		$db_socket = array('/var/run/mysqld/mysqld1.sock', '/var/run/mysqld/mysqld2.sock');
 
+		$errors = '';
+		$dbADown = false;
+		$dbBDown = false;
+
 		$dbA = new mysqli($db_host, $db_user, $db_pass, $db_name[0], $db_port[0],$db_socket[0]);
-		$dbB = new mysqli($db_host, $db_user, $db_pass, $db_name[1], $db_port[1],$db_socket[1]);
 		if ($dbA->connect_error) {
-			die("Database A connection failed: " . $dbA->connect_error);
+			//die("Database A connection failed: " . $dbA->connect_error);
+			$dbADown = true;
 		}
+		$dbB = new mysqli($db_host, $db_user, $db_pass, $db_name[1], $db_port[1],$db_socket[1]);
 		if ($dbB->connect_error) {
-			die("Database B connection failed: " . $dbB->connect_error);
+			//die("Database B connection failed: " . $dbB->connect_error);
+			$dbBDown = true;
+		}
+
+		if ($dbADown && $dbBDown) {
+			terminate('There is an internal service error and we cannot process your request at this time. Please try again later.', 'BOTH DATABASES WERE DOWN AT THE MOMENT OF REGISTRATION.\n');
 		}
 		
-		echo 'Connected to both databases.';
+		//echo 'Connected to both databases.';
 		$username = $_POST['signupUsername'];
 		if (!validateUsername($username)) {
-			echo 'Invalid username' . $username;
-			exit();
+			terminate("The username $username is invalid!");
 		}
 
 		$password = $_POST['signupPassword'];
 		if (!validatePassword($password)) {
-			echo 'Invalid password.';
-			exit();
+			terminate("The password $password is invalid!");
 		}
 		$hash = password_hash($password, PASSWORD_BCRYPT);
 
 		$email = $_POST['signupEmail'];
 		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-			echo 'Invalid email.';
-			exit();
+			terminate("The email addredd $email is invalid!");
 		}
 
-		$stmt = $dbA->prepare("SELECT user_name FROM users WHERE user_name=?");
-		$stmt->bind_param("s", $username);
-		$stmt->execute();
-		
-		if (!$result = $stmt->get_result()) {
-			die("Error running query.");
-		}
-		else {
-			if ($result->num_rows) {
-				echo 'Username already in use.';
-				exit();
+		if (!$dbADown) {
+			$stmt = $dbA->prepare("SELECT user_name FROM users WHERE user_name=?");
+			$stmt->bind_param("s", $username);
+			$stmt->execute();
+			
+			if (!$result = $stmt->get_result()) {
+				die("Error running query.");
 			}
-		}
-		
-		$stmt->close();
-
-		$stmt = $dbA->prepare("SELECT email FROM users WHERE email=?");
-		$stmt->bind_param("s", $email);
-		$stmt->execute();
-		
-		if (!$result = $stmt->get_result()) {
-			die("Error running query.");
-		}
-		else {
-			if ($result->num_rows) {
-				echo 'Email already in use.';
-				exit();
+			else {
+				if ($result->num_rows) {
+					echo 'Username already in use.';
+					exit();
+				}
 			}
-		}
+			
+			$stmt->close();
 
-		$stmt->close();
+			$stmt = $dbA->prepare("SELECT email FROM users WHERE email=?");
+			$stmt->bind_param("s", $email);
+			$stmt->execute();
+			
+			if (!$result = $stmt->get_result()) {
+				die("Error running query.");
+			}
+			else {
+				if ($result->num_rows) {
+					echo 'Email already in use.';
+					exit();
+				}
+			}
 
-		$fail = 0;
+			$stmt->close();
 
-		$stmt = $dbA->prepare('INSERT INTO users (user_name, email, password_hash, registered) VALUES(?, ?, ?, false)');
-		$stmt->bind_param("sss", $username, $email, $hash);
+			$fail = 0;
+
+			$stmt = $dbA->prepare('INSERT INTO users (user_name, email, password_hash, registered) VALUES(?, ?, ?, false)');
+			$stmt->bind_param("sss", $username, $email, $hash);
+			
+			if (!$stmt->execute()) {
+				echo 'Failed to insert data into database A';
+				$fail += 1;
+			}
 		
-		if (!$stmt->execute()) {
-			echo 'Failed to insert data into database A';
-			$fail += 1;
-		}
-		
-		$stmt->close();
-
-		$stmt = $dbB->prepare('INSERT INTO users (user_name, email, password_hash, registered) VALUES(?, ?, ?, false)');
-		$stmt->bind_param("sss", $username, $email, $hash);
-
-		if (!$stmt->execute()) {
-			echo 'Failed to insert data into database B';
-			$fail += 2;
+			$stmt->close();
 		}
 
-		$stmt->close();
+		if (!$dbBDown) {
+			$stmt = $dbB->prepare("SELECT user_name FROM users WHERE user_name=?");
+			$stmt->bind_param("s", $username);
+			$stmt->execute();
+			
+			if (!$result = $stmt->get_result()) {
+				die("Error running query.");
+			}
+			else {
+				if ($result->num_rows) {
+					echo 'Username already in use.';
+					exit();
+				}
+			}
+			
+			$stmt->close();
+
+			$stmt = $dbB->prepare("SELECT email FROM users WHERE email=?");
+			$stmt->bind_param("s", $email);
+			$stmt->execute();
+			
+			if (!$result = $stmt->get_result()) {
+				die("Error running query.");
+			}
+			else {
+				if ($result->num_rows) {
+					echo 'Email already in use.';
+					exit();
+				}
+			}
+
+			$stmt->close();
+
+			$stmt = $dbB->prepare('INSERT INTO users (user_name, email, password_hash, registered) VALUES(?, ?, ?, false)');
+			$stmt->bind_param("sss", $username, $email, $hash);
+
+			if (!$stmt->execute()) {
+				echo 'Failed to insert data into database B';
+				$fail += 2;
+			}
+
+			$stmt->close();
+		}
+
+		if ($fail < 3) {
+			if ($dbADown) writeErrorLog("DATABASE A WAS DOWN WHEN $username WITH EMAIL $email AND PASSWORD HASH $hash REGISTERED; this user must be added manually.\n");
+			if ($dbBDown) writeErrorLog("DATABASE B WAS DOWN WHEN $username WITH EMAIL $email AND PASSWORD HASH $hash REGISTERED; this user must be added manually.\n");	
+		}
 		// Both databases failed
 		if ($fail == 3) {
-			die('Terrible error! Couldn\'t add data to any database!');
+			terminate('There is an internal server error and we can\'t register you at the moment. Please try again later.', 'Both databases failed upon user creation!');
 		}
 		else {
 
@@ -124,28 +190,31 @@
 			$expirydate = $timestamp + 86400; //86400 seconds in a day
 			$debug .= "Timestamp: $timestamp  Expirydate: $expirydate\n";
 
-			
-			if (!($sql = $dbA->prepare("INSERT INTO confirmation_tokens (user_name,token,expires) VALUES (?, ?, ?)"))) {
-				$debug .= "Prepare failed. Reason: $dbA->error\n";
+			if (!$dbADown) {			
+				if (!($sql = $dbA->prepare("INSERT INTO confirmation_tokens (user_name,token,expires) VALUES (?, ?, ?)"))) {
+					$debug .= "Prepare failed. Reason: $dbA->error\n";
+				}
+				if (!($sql->bind_param("ssi",$username,$token,$expirydate))) {
+					$debug .= "Binding failed. Reason: $sql->error\n";
+				}
+				if (!($sql->execute())) {
+					$debug .= "Execute failed. Reason: $sql->error\n";
+				}
+				$sql->close();
 			}
-			if (!($sql->bind_param("ssi",$username,$token,$expirydate))) {
-				$debug .= "Binding failed. Reason: $sql->error\n";
+				
+			if (!$dbBDown) {			
+				if (!($sql = $dbB->prepare("INSERT INTO confirmation_tokens (user_name,token,expires) VALUES (?, ?, ?)"))) {
+					$debug .= "Prepare failed. Reason: $dbB->error\n";
+				}
+				if (!($sql->bind_param("ssi",$username,$token,$expirydate))) {
+					$debug .= "Binding failed. Reason: $sql->error\n";
+				}
+				if (!($sql->execute())) {
+					$debug .= "Execute failed. Reason: $sql->error\n";
+				}
+				$sql->close();
 			}
-			if (!($sql->execute())) {
-				$debug .= "Execute failed. Reason: $sql->error\n";
-			}
-			/*	
-			if (!($sql = $dbB->prepare("INSERT INTO confirmation_tokens (user_name,token,expires) VALUES (?, ?, ?)"))) {
-				$debug .= "Prepare failed. Reason: $dbB->error\n";
-			}
-			if (!($sql->bind_param("ssi",$username,$token,$expirydate))) {
-				$debug .= "Binding failed. Reason: $sql->error\n";
-			}
-			if (!($sql->execute())) {
-				$debug .= "Execute failed. Reason: $sql->error\n";
-			}
-			$sql->close();
-			*/
 			
 
 			/*
@@ -176,13 +245,11 @@
 			}
 
 			echo 'Okay you are registered ... please confirm your email before signing in.';
+			writeErrorLog($debug);
 			//echo "<pre>$debug</pre>";
 
 		}
 		
-		$dbA->close();
-		$dbB->close();
-
 		exit();
 
 	}
