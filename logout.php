@@ -1,29 +1,22 @@
 <?php
-	//logout.php
-	//logs the user out if they are logged in
+	/*
+	 * logout.php
+	 * Logs the user out if they are logged in, and then redirects the user to the splash page
+	 *
+	 * usage:
+	 * http://myvmlab.senecacollege.ca:5311/logout.php
+	 */
 
-	$pageTitle = 'Log out';
-	require('header.php');
-	require('navigation.php');
 	session_start();
 
-	echo '<pre>';
-	echo "Session id: ";
-	echo session_id();
-	echo "<br>";
-	var_dump($_SESSION);
-	echo '</pre>';
-
 	if (isset($_SESSION['username'])) {
-		echo "You are now logged out.";
 		session_destroy();
-	} else {
-		echo "You are not logged in.";
-		//header('Location: test_login.php');
+		echo '<p>You have been logged out.</p><p>Redirecting to front page...<p>';
+		// Redirect to the front page after 5 seconds
+		echo 
+		'<script>setTimeout(function () { window.location.href="index.php"; }, 5000);</script>';
+	} 
+	else {
+		header('Location: index.php');
 	} //end if statement
-
-	echo "<br>";
-	echo "<a href='login.php'>Return to login</a>";
-	require('footer.php');
-
 ?>

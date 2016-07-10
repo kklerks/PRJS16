@@ -104,19 +104,86 @@
 		}
 
 		$stmt->close();
-		
-		$dbA->close();
-		$dbB->close();
-
 		// Both databases failed
 		if ($fail == 3) {
 			die('Terrible error! Couldn\'t add data to any database!');
 		}
 		else {
-			//$_SESSION['username'] = $username;
-			//header('Location: check.php');
+
+			/*
+			 * Generate unique token
+			 */
+			$token = sha1(uniqid($username)); //based on sha1 + uniqid() of username
+			$debug .= "Generated token: $token\n";
+
+
+			/*
+			 * Add entry to token database
+			 */
+			$timestamp = $_SERVER['REQUEST_TIME']; //unix time
+			$expirydate = $timestamp + 86400; //86400 seconds in a day
+			$debug .= "Timestamp: $timestamp  Expirydate: $expirydate\n";
+
+			
+			if (!($sql = $dbA->prepare("INSERT INTO confirmation_tokens (user_name,token,expires) VALUES (?, ?, ?)"))) {
+				$debug .= "Prepare failed. Reason: $dbA->error\n";
+			}
+			if (!($sql->bind_param("ssi",$username,$token,$expirydate))) {
+				$debug .= "Binding failed. Reason: $sql->error\n";
+			}
+			if (!($sql->execute())) {
+				$debug .= "Execute failed. Reason: $sql->error\n";
+			}
+			/*	
+			if (!($sql = $dbB->prepare("INSERT INTO confirmation_tokens (user_name,token,expires) VALUES (?, ?, ?)"))) {
+				$debug .= "Prepare failed. Reason: $dbB->error\n";
+			}
+			if (!($sql->bind_param("ssi",$username,$token,$expirydate))) {
+				$debug .= "Binding failed. Reason: $sql->error\n";
+			}
+			if (!($sql->execute())) {
+				$debug .= "Execute failed. Reason: $sql->error\n";
+			}
+			$sql->close();
+			*/
+			
+
+			/*
+			 * Generate and send mail
+			 */
+			$subject = "Tabletop Assistant Account Verification";
+			$reply = "hzhuang3@myseneca.ca";
+			$headers = "From: no-reply@myvmlab.senecacollege.ca" . "\r\n" . "Reply-to: $reply";
+			$link = "http://myvmlab.senecacollege.ca:5311/confirm.php?reg=$token";
+			$del_link = "http://myvmlab.senecacollege.ca:5311/delete_user.php?reg=$token";
+			$message = 
+				"Hello " . $username . "\n\n" .
+				"Thank you for signing up for Tabletop Assistant." . "\n\n" .
+				"Please visit the link below within the next 24 hours" .
+				" to verify your account:\n\n" . $link . "\n\n" .
+				"After your account is verified you can begin to use the application." .
+				" We hope you enjoy using the Tabletop Assistant!" . "\n\n" . "The Tabletop Assistant Team" . "\n\n" .
+				"------------------------------------------------------" . "\n\n" .
+				"This email was automatically sent because someone attempted to create an account using this email address." . "\n\n" .
+				"Please use the following link to delete the account in the case you erronously recieved this email: " . "\n\n" . $del_link;
+
+			$debug .= "Message: " . $message . "\n";
+
+			if (mail($email,$subject,$message,$headers)) {
+				$debug .= "Message sent.\n";
+			} else {
+				$debug .= "Failed to send mail.\n";
+			}
+
 			echo 'Okay you are registered ... please confirm your email before signing in.';
-			exit();
+			//echo "<pre>$debug</pre>";
+
 		}
+		
+		$dbA->close();
+		$dbB->close();
+
+		exit();
+
 	}
 ?>
