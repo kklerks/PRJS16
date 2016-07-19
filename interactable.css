@@ -1,0 +1,55 @@
+#sheetContainer {
+    position: absolute;
+    left:250px;
+    margin: auto;
+    width:350px;
+    height:500px;
+    background-color:red;
+}
+#resourceControl {
+    background-color:white;
+}
+#spawnButton {
+    position: fixed;
+}
+#spawnLabel {
+    position: fixed;
+    top: 50px;
+}
+#spawnVariable {
+    position: fixed;
+    top: 90px;
+}
+#spawnImage{
+    position: fixed;
+    top: 130px;
+}
+#saveButton {
+    position: fixed;
+    top: 200px;
+}
+.resourceDiv {
+    position:absolute;
+    width:150px;
+    height:20px;
+    background-color:white;
+    outline-color:blue;
+    outline-style:dotted;
+}
+#label {
+    width: 100px;
+    height: 100px;
+}
+.image {
+    position:absolute;
+    background-color:none;
+    outline:1px dashed black;
+    width:18px;
+    height:18px;
+}
+.block {
+    /*position:absolute;
+    width:20px;
+    height:20px;
+    background-color:rebeccapurple;*/
+}

@@ -1,0 +1,74 @@
+nav {
+    background-color: #aaaaaa;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+}
+nav > a {
+    padding-left: 10px;
+    padding-right: 5px;
+}
+nav > a:link {
+    color: black;
+    text-decoration: none;
+}
+nav > a:visited {
+    color: black;
+    text-decoration: none;
+}
+nav > a:hover {
+    color: black;
+    text-decoration: none;
+}
+nav > a:active {
+    color: black;
+    text-decoration: none;
+}
+.popupDiv {
+    text-align: center;
+}
+.formDiv {
+    padding-bottom: 10px;
+}
+#helpDiv {
+    background-color: rgba(131, 131, 131, 0.4);
+}
+#helpDiv > button {
+    bottom: 10px;
+    left: 10px;
+}
+#helpDiv > #helpText {
+    width: 50%;
+}
+#helpDiv > #helpTopics {
+    width: 40%;
+    background-color: whitesmoke;
+}
+#helpTopics > a:link {
+    color: black;
+    text-decoration: none;
+}
+#helpTopics > a:visited {
+    color: black;
+    text-decoration: none;
+}
+#helpTopics > a:hover {
+    color: black;
+    text-decoration: none;
+}
+#helpTopics > a:active {
+    color: black;
+    text-decoration: none;
+}
+#calc {
+    margin:auto;
+    text-align:center;
+}
+.ui-dialog-content {
+    text-align:center;
+}
+.ui-dialog-content button {
+    width: 200px;
+}
