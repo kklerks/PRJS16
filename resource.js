@@ -33,6 +33,7 @@ function manageResource(resourceID, resourceDivID){
       effect: 'blind',
       duration: 500
     },
+    modal: true,
     title: 'New ' + document.getElementById(resourceID).getAttribute('resourceType')
   });
 
@@ -369,28 +370,54 @@ function delResource(resourceID,resourceDivID){
   }
 
   var tempResource = document.getElementById(resourceID);
+  // If we're deleting a variable, we'll also delete all the calculations that use it
   if (tempResource.getAttribute('resourceType') == 'variable') {
 	console.log('Deleting a resource... checking calculations...');
 	console.log('calcCounter is ' + calcCounter);
 	var regExp = /\[([^\]]+)\]/g;
+	var calcNames = [];
+	var calcIndices = [];
+	var calcFound = false;
 	for (var k = 0; k < calcCounter; k++) {
 	  var variables = [];
 	  var temp = calcArr[k].value;
-	  if (calcArr[k].targetVar == temp.id) {
-	  	window.alert('This variable is targeted by the calculation ' + calcArr[k].name + '! It cannot be deleted!');
-		return false;
+	  if (calcArr[k].targetVar == tempResource.id) {
+		console.log('Found ' + tempResource.value + ' in the calculation ' + calcArr[k].name);
+		calcNames.push(calcArr[k].name);
+		calcIndices.push(k);
+		calcFound = true;
 	  }	
 	  // Fill the variables array with the strings inside square brackets (excluding the brackets themselves)
 	  temp.replace(regExp, function(g0,g1) { variables.push(g1); });
 	  if (variables) {
 	    for (var i = 0; i < variables.length; i++) {
 	      console.log('Found ' + variables[i] + ' in the calculation string.');
-	      if (variables[i] == tempResource.id) {
-		window.alert('This variable is used in the calculation ' + calcArr[k].name + '! It cannot be deleted!');
-		return false;
+	      if (!calcFound && variables[i] == tempResource.id) {
+		calcNames.push(calcArr[k].name);
+		calcIndices.push(k);
 	      }	
 	    }
           }
+	  calcFound = false;
+      }
+      if (calcNames.length > 0) {
+	var str = 'This variable is used in the following calculations:\n';
+	for (var i=0; i<calcNames.length; i++) {
+		str += calcNames[i] + '\n';
+	}
+	str += 'Deleting the variable will also delete the calculations. Proceed?';
+	if (confirm(str)) {
+		// When we delete a calculation, every element in calcArr after it shifts to the left, so we need an offset variable here to shift the values inside calcIndices as well 
+		var offset = 0;
+		for (var i=0; i<calcIndices.length; i++) {
+			// Delete the calculation with no individual confirmation prompt
+			delCalculation(calcIndices[i-offset], false);
+			offset++;
+		}
+	}
+	else {
+		return false;	
+	}
       }
   }
 

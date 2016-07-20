@@ -20,6 +20,7 @@ function manageCalculations() {
       effect: 'blind',
       duration: 500
     },
+    modal: true,
     title: 'Calculations'
   });
 
@@ -51,18 +52,26 @@ function manageCalculations() {
   delButton.addEventListener('click', function(){ delCalculation() });
 
   $('#calcControl').append($(newButton));
-  $('#calcControl').append($('<br />'));
-  $('#calcControl').append($(delButton));
+  //$('#calcControl').append($('<br />'));
+  //$('#calcControl').append($(delButton));
 
   $('#calcControl').dialog('open');
 }
 
-// TODO: delete any calculation instead of just the last one... Would need to rebuild calcArray to avoid gaps and inconsistency with calcCounter
-function delCalculation() {
+function delCalculation(index = -1, confirmDeletion=true) {
 	if (calcCounter > 0) {
-		calcArr.pop();
+		if (confirmDeletion && !window.confirm('Really delete ' + (index == -1 ? calcArr[calcCounter-1].name : calcArr[index].name) + '?')) return false;
+		if (index == -1) {
+			calcArr.pop();
+		}
+		else {
+			calcArr.splice(index, 1);
+		}
 		calcCounter--;
-		manageCalculations();
+		if (confirmDeletion) {
+			$(".ui-dialog-content").dialog("close");
+			manageCalculations();
+		}
 	}
 }
 
@@ -116,17 +125,27 @@ function newCalculation(calc = -1) {
   // If we are adiing a new calculation, set the button's text to Create, otherwise to Change
   (calc == -1 ? createButton.innerHTML = 'Create' : createButton.innerHTML = 'Change');
   createButton.addEventListener('click', function(){ createCalculation($(nameInput).val(), $(textInput).val(), $(targetVar).val(), $(targetEnemy).val(), calc) });
+  var delButton= document.createElement('button');
+  delButton.id = 'delButton';
+  delButton.innerHTML = 'Delete';
+  delButton.addEventListener('click', function(){ delCalculation(calc) });
+
 
   $('#newCalcControl').append($(name_label), $(nameInput), '<br />');
   $('#newCalcControl').append($(value_label), $(textInput), '<br />');
   $('#newCalcControl').append('Target variable: ', targetVar, '<br />');
   $('#newCalcControl').append('Target player: ', targetEnemy, '<br />');
+  if (calc != -1) $('#newCalcControl').append($(delButton));
   $('#newCalcControl').append($(createButton));
 
   $('#newCalcControl').dialog('open');
 }
 
 function createCalculation(name, calculation, targetVar, targetEnemy, counter = -1) {
+  if (!name) {
+	alert('A calculation must have a name!');
+	return false;
+  }
   console.log('Creating a calculation that targets ' + targetEnemy + ' on ' + targetVar);
   if (targetVar == null || targetEnemy == null) {
 	window.alert('A target variable or player has not been selected!');
@@ -137,17 +156,23 @@ function createCalculation(name, calculation, targetVar, targetEnemy, counter = 
   var regExp = /\[([^\]]+)\]/g;
   var variables = [];
   var temp = calculation;
+  console.log('temp is ' + temp);
   // Fill the variables array with the strings inside square brackets (excluding the brackets themselves)
   temp.replace(regExp, function(g0,g1) { variables.push(g1); });
   if (variables) {
     for (var i = 0; i < variables.length; i++) {
       console.log('Found ' + variables[i] + ' in the calculation string.');
       var variableExists = false;
-      for (var j = 0; j < variableArr.length; j++) {
-        if (variables[i] == variableArr[j].id) {
-          variableExists = true;
-	  console.log(variables[i] + ' exists at variableArr[' + j + ']');
-	}
+      if (variables[i] == '?') {
+	variableExists = true;
+      }
+      else {
+        for (var j = 0; j < variableArr.length; j++) {
+          if (variables[i] == variableArr[j].id) {
+            variableExists = true;
+	    console.log(variables[i] + ' exists at variableArr[' + j + ']');
+	  }
+        }
       }
       if (!variableExists) {
 	console.log('INVALID INPUT: ' + variables[i] + ' is not a proper variable!');
@@ -163,6 +188,9 @@ function createCalculation(name, calculation, targetVar, targetEnemy, counter = 
   // We do this by replacing every variable with a constant and then evaluating and hoping we don't get an error
   // Probably not the best way
   temp = calculation;
+  // We allow a @ before variables to indicate that the variable belongs to the targeted player; but we have to remove the @ to check that the expression syntax is valid
+  temp = temp.replace(/\@\[/g, '[');
+  console.log('temp is ' + temp);
   temp = temp.replace(regExp, 2); 
   try {
     math.eval(temp);
@@ -178,6 +206,8 @@ function createCalculation(name, calculation, targetVar, targetEnemy, counter = 
   }
 
   temp = calculation;
+  temp = temp.replace(/\@\[/g, '[');
+  console.log('temp is ' + temp);
   temp = temp.replace(regExp, 0); 
   try {
     math.eval(temp);
