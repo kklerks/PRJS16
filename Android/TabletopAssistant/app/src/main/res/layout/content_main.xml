@@ -10,10 +10,86 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="ca.senecacollege.myvmlab.student.tabletopassistant.MainActivity"
-    tools:showIn="@layout/activity_main">
+    tools:showIn="@layout/activity_main"
+    android:background="#000000"
+    >
 
-    <TextView
-        android:layout_width="wrap_content"
+
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Main menu" />
+        android:layout_gravity="center_horizontal"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="TABLETOP"
+            android:id="@+id/mainScreenTitleTABLETOP"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:textSize="40sp"
+            android:gravity="center"
+            android:textColor="@color/buttonText"
+            android:layout_marginTop="10dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="ASSISTANT"
+            android:id="@+id/mainScreenTitleASSISTANT"
+            android:layout_below="@+id/mainScreenTitleTABLETOP"
+            android:layout_centerHorizontal="true"
+            android:textSize="40sp"
+            android:textColor="@color/buttonText"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PLAY AS GUEST"
+            android:id="@+id/button"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="@color/buttonBackground"
+            android:textColor="@color/buttonText"
+            android:layout_marginTop="10dp"
+            android:onClick="buttonPlayAsGuest"
+
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="REGISTER"
+            android:id="@+id/button2"
+            android:layout_above="@+id/button"
+            android:layout_centerHorizontal="true"
+            android:background="@color/buttonBackground"
+            android:textColor="@color/buttonText"
+            android:layout_marginTop="10dp"
+            android:onClick="buttonRegister"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LOG IN"
+            android:id="@+id/button3"
+            android:layout_above="@+id/button2"
+            android:layout_centerHorizontal="true"
+            android:background="@color/buttonBackground"
+            android:textColor="@color/buttonText"
+            android:layout_marginTop="10dp"
+            android:onClick="buttonLogin"
+            />
+
+    </RelativeLayout>
+
 </RelativeLayout>
