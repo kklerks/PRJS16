@@ -22,7 +22,7 @@
     <nav>
         <a href="javascript:void(0)" onclick="newSheet();" style="padding-left: 20px;">New</a>
         <a href="javascript:void(0)" onclick="saveSheet();">Save</a>
-        <a href="javascript:void(0)" onclick="loadSheet();">Load</a>
+        <a href="javascript:void(0)" onclick="openSheetList();">Load</a>
         <a href="javascript:void(0)" onclick="changeSheetHeight(0)">Increase</a>
         <a href="javascript:void(0)" onclick="changeSheetHeight(1)">Decrease</a>
         <a href="javascript:void(0)" onclick="openHelp();" style="float: right; padding-right: 20px;">Help</a>
@@ -33,11 +33,14 @@
     <button id="spawnLabel" onclick="spawnLabel()">Spawn Label</button>
     <button id="spawnVariable" onclick="spawnVariable()">Spawn Variable</button>
     <button id="spawnImage" onclick="spawnImage()">Spawn Image</button>
-    <button id="saveButton" onclick="saveToJson()">Save To JSON</button>
+    <button id="calcButton" onclick="manageCalculations()">Calculations</button>
+    <!--<button id="saveButton" onclick="saveToJson()">Save To JSON</button>-->
 
+    <!--
     <div id="calc">
 	    <button id="calcButton" onclick="manageCalculations()">Calculations</button>
     </div>
+    -->
 
     <div id="resourceControl">
     </div>
@@ -52,10 +55,15 @@
     </div>
 
     <div class="popupDiv" id="helpDiv" title="Help">
-        <div id="helpText"></div>
         <div id="helpTopics"></div>
+        <div id="helpText"></div>
         <button id="helpCloseButton" onclick="closeHelp()">Close</button>
     </div>
+    <div class="popupDiv" id="sheetListDiv" title="Sheets">
+        <div id="sheetList"></div>
+        <button id="sheetListCloseButton" onclick="closeSheetList()">Close</button>
+    </div>
+
     <script src="popupControl.js"></script>
     <script src="readHelp.js"></script>
 </body>

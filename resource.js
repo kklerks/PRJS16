@@ -15,6 +15,20 @@ variableArr.name = "variableArr";
 var imageArr = [];
 imageArr.name = "imageArr";
 
+var maxWidth = 350;
+var maxHeight = 500;
+
+function toggleCalcButton() {
+	if (variableCounter > 0)
+		document.getElementById('calcButton').disabled = false;
+	else
+		document.getElementById('calcButton').disabled = true;
+}
+
+$(document).ready(function() {
+	toggleCalcButton();
+});
+
 // Main resource management function. 
 // Opens up a dialog box for managing resource parameters as well as
 // deletion of a resource.
@@ -40,6 +54,8 @@ function manageResource(resourceID, resourceDivID){
   // Reset the resourceControl div each time a resource is clicked.
   $('#resourceControl').empty();
 
+  var resourceType = document.getElementById(resourceID).getAttribute('resourceType');
+
   // Get the value of the resource
   var resourceValue = document.getElementById(resourceID).textContent;
   if (document.getElementById(resourceID).tagName.toLowerCase() == "input")
@@ -55,6 +71,7 @@ function manageResource(resourceID, resourceDivID){
   //id_input.setAttribute('readOnly', 'true');
   $(id_input).val(resourceID);
   // Select the id field when the dialog opens
+  $(id_input).attr('maxlength', 16);
   $(id_input).select();
   //id_input.addEventListener('change', function(){ setResource(resourceID) });
 
@@ -64,6 +81,8 @@ function manageResource(resourceID, resourceDivID){
   var value_input = document.createElement('input');
   value_input.id = 'value_input';
   $(value_input).val(resourceValue);
+  if (resourceType != 'image')
+	  $(value_input).attr('maxlength', 32);
   //value_input.addEventListener('change', function(){ setResource(resourceID) });
 
   // Display a resource's dimensions - width
@@ -85,7 +104,7 @@ function manageResource(resourceID, resourceDivID){
   var changeButton = document.createElement('button');
   changeButton.id = 'changeButton';
   changeButton.innerHTML = 'Okay';
-  changeButton.addEventListener('click', function(){ setResource(resourceID) });
+  changeButton.addEventListener('click', function(){ setResource(resourceID, resourceDivID) });
 
   var deleteButton = document.createElement('button');
   deleteButton.id = 'deleteButton';
@@ -95,16 +114,26 @@ function manageResource(resourceID, resourceDivID){
   var bringToFront = document.createElement('button');
   bringToFront.id = 'bringToFront';
   bringToFront.innerHTML = 'Bring to Front';
-  bringToFront.addEventListener('click', function(){ bringDivToFront(resourceDivID) });
+  bringToFront.addEventListener('click', function(){ bringDivToFront(resourceID, resourceDivID) });
 
   var sendToBack = document.createElement('button');
   sendToBack.id = 'sendToBack';
   sendToBack.innerHTML = 'Send to Back';
-  sendToBack.addEventListener('click', function(){ sendDivToBack(resourceDivID) });
+  sendToBack.addEventListener('click', function(){ sendDivToBack(resourceID, resourceDivID) });
 
   $( '#resourceControl' ).append(id_label,id_input,'<br>',value_label,value_input,'<br>');
   $( '#resourceControl' ).append(width_label,width_input,'<br>',height_label,height_input,'<br>');
-  $( '#resourceControl' ).append(bringToFront, sendToBack, '<br>');
+  console.log("Last child of type block is " + $('.block:last').attr('id'));
+  if ($('.block:last').attr('id') == resourceDivID) {
+	bringToFront.disabled = true;
+  }
+  console.log("First child of type block is " + $('.block:first').attr('id'));
+  if ($('.block:first').attr('id') == resourceDivID) {
+	sendToBack.disabled = true;
+  }
+
+  $( '#resourceControl' ).append(bringToFront, '<br>');
+  $( '#resourceControl' ).append(sendToBack, '<br>');
   $( '#resourceControl' ).append(deleteButton, '<br>', changeButton);
 
   // Clicks the Okay button when the user presses Enter in any of the input boxes
@@ -113,7 +142,7 @@ function manageResource(resourceID, resourceDivID){
 	console.log("Pressing Okay with resource " + resourceID);
 	console.log("resourceDivID is " + resourceDivID + ", and its child is " + document.getElementById(resourceDivID).firstChild.id);
         //$("#changeButton").click();
-	setResource(resourceID);
+	setResource(resourceID, resourceDivID);
     }
   });
   $('#value_input').keypress(function(e){
@@ -121,7 +150,7 @@ function manageResource(resourceID, resourceDivID){
 	console.log("Pressing Okay with resource " + resourceID);
 	console.log("resourceDivID is " + resourceDivID + ", and its child is " + document.getElementById(resourceDivID).firstChild.id);
         //$("#changeButton").click();
-	setResource(resourceID);
+	setResource(resourceID, resourceDivID);
     }
   });
   $('#width_input').keypress(function(e){
@@ -129,30 +158,130 @@ function manageResource(resourceID, resourceDivID){
 	console.log("Pressing Okay with resource " + resourceID);
 	console.log("resourceDivID is " + resourceDivID + ", and its child is " + document.getElementById(resourceDivID).firstChild.id);
         //$("#changeButton").click();
-	setResource(resourceID);
+	setResource(resourceID, resourceDivID);
     }
   });
+
   $('#height_input').keypress(function(e){
     if (e.which == 13){
 	console.log("Pressing Okay with resource " + resourceID);
 	console.log("resourceDivID is " + resourceDivID + ", and its child is " + document.getElementById(resourceDivID).firstChild.id);
         //$("#changeButton").click();
-	setResource(resourceID);
+	setResource(resourceID, resourceDivID);
     }
+  });
+
+  $('#width_input').attr('maxlength', 3);
+  if (parseInt(document.getElementById('sheetContainer').style.height)) {
+	maxHeight = parseInt(document.getElementById('sheetContainer').style.height);
+  }
+  else {
+	maxHeight = 500;
+  }
+  $('#height_input').attr('maxlength', (''+maxHeight).length);
+  // Warn the user when the width or height input is too great
+  $('#width_input').keyup(function() {
+	console.log("Width has changed.");
+	if (parseInt($('#width_input').val()) != $('#width_input').val()) {
+		document.getElementById('width_input').setCustomValidity("The width must be an integer!");
+		try {
+			document.getElementById('width_input').reportValidity();
+		}
+		catch(err) {
+			console.log("reportValidity() doesn't work -- browser is not Chrome");
+		}
+	}
+	else if ($('#width_input').val() > maxWidth) {
+		document.getElementById('width_input').setCustomValidity("The width cannot exceed the maximum sheet width of " + maxWidth);
+		try {
+			document.getElementById('width_input').reportValidity();
+		}
+		catch(err) {
+			console.log("reportValidity() doesn't work -- browser is not Chrome");
+		}
+	}
+	else if ($('#width_input').val() < 50) {
+		document.getElementById('width_input').setCustomValidity("The width must be at least 50.");
+		try {
+			document.getElementById('width_input').reportValidity();
+		}
+		catch(err) {
+			console.log("reportValidity() doesn't work -- browser is not Chrome");
+		}
+	}
+	else {
+		document.getElementById('width_input').setCustomValidity('');
+		try {
+			document.getElementById('width_input').reportValidity();
+		}
+		catch(err) {
+			console.log("reportValidity() doesn't work -- browser is not Chrome");
+		}
+	}	
+  });
+  $('#height_input').keyup(function() {
+	console.log("Height has changed.");
+	if (parseInt(document.getElementById('sheetContainer').style.height)) {
+		maxHeight = parseInt(document.getElementById('sheetContainer').style.height);
+	}
+	else {
+		maxHeight = 500;
+	}	
+
+	if (parseInt($('#height_input').val()) != $('#height_input').val()) {
+		document.getElementById('height_input').setCustomValidity("The height must be an integer!");
+		try {
+			document.getElementById('height_input').reportValidity();
+		}
+		catch(err) {
+			console.log("reportValidity() doesn't work -- browser is not Chrome");
+		}
+	}
+	else if ($('#height_input').val() > maxHeight) {
+		document.getElementById('height_input').setCustomValidity("The height cannot exceed the maximum sheet height of " + maxHeight);
+		try {
+			document.getElementById('height_input').reportValidity();
+		}
+		catch(err) {
+			console.log("reportValidity() doesn't work -- browser is not Chrome");
+		}
+	}
+	else if ($('#height_input').val() < 50) {
+		document.getElementById('height_input').setCustomValidity("The height must be at least 50.");
+		try {
+			document.getElementById('height_input').reportValidity();
+		}
+		catch(err) {
+			console.log("reportValidity() doesn't work -- browser is not Chrome");
+		}
+	}
+	else {
+		document.getElementById('height_input').setCustomValidity('');
+		try {
+			document.getElementById('width_input').reportValidity();
+		}
+		catch(err) {
+			console.log("reportValidity() doesn't work -- browser is not Chrome");
+		}
+	}	
   });
 
   $('#resourceControl').dialog('open');
 }
 
-function bringDivToFront(resourceDivID) {
+function bringDivToFront(resourceID, resourceDivID) {
   $('#sheetContainer').append(document.getElementById(resourceDivID));
+  manageResource(resourceID, resourceDivID);
 }
-function sendDivToBack(resourceDivID) {
+function sendDivToBack(resourceID, resourceDivID) {
   $('#sheetContainer').prepend(document.getElementById(resourceDivID));
+  manageResource(resourceID, resourceDivID);
 }
 
-function setResource(resourceID){
+function setResource(resourceID, resourceDivID){
   var temp = document.getElementById(resourceID);
+  var tempDiv = document.getElementById(resourceDivID);
+  console.log('tempDiv is ' + tempDiv.id);
   var newId = document.getElementById('id_input');
   var newVal = document.getElementById('value_input');
   var newWidth = document.getElementById('width_input');
@@ -172,10 +301,12 @@ function setResource(resourceID){
 	  window.alert("This value exceeds the maximum width of " + maxWidth + "!");
 	  //$(newWidth).val($(temp).width());
 	  $(newWidth).val($(temp.parentElement).width());
+	  return false;
 	}
 	else if ($(newWidth).val() < 50) {
 	  window.alert("A block cannot have a width less than 50!");
 	  $(newWidth).val($(temp.parentElement).width());
+	  return false;
 	  //$(newWidth).val($(temp).width());
 	}
 	else {
@@ -189,10 +320,12 @@ function setResource(resourceID){
 	if ($(newHeight).val() > maxHeight) {
 	  window.alert("This value exceeds the maximum height of " + maxHeight + "!");
 	  $(newHeight).val($(temp.parentElement).height());
+	  return false;
 	}
 	else if ($(newHeight).val() < 50) {
 	  window.alert("A block cannot have a height less than 50!");
 	  $(newHeight).val($(temp.parentElement).height());
+	  return false;
 	}
 	else {
 	  temp.height = $(newHeight).val();
@@ -274,6 +407,9 @@ function setResource(resourceID){
       if ($(temp).text != $(newVal).val()) {
 	      console.log('Changing a label.');
 	      $(temp).text($(newVal).val());
+	      $(tempDiv).val($(newVal).val());
+	      temp.setAttribute('resourceValue', $(newVal).val());
+	      tempDiv.setAttribute('resourceValue', $(newVal).val());
       }
       break;
     case 'variable':
@@ -281,12 +417,16 @@ function setResource(resourceID){
 	      console.log('Changing a variable.');
 	      temp.setAttribute('resourceValue', $(newVal).val());
 	      $(temp).val($(newVal).val());
+	      $(tempDiv).val($(newVal).val());
+	      tempDiv.setAttribute('resourceValue', $(newVal).val());
       }
       break;
     case 'image':
       if ($(temp).attr("src") != $(newVal).val()) {
 	      console.log('Changing an image.');
 	      temp.setAttribute('resourceValue', $(newVal).val());
+		console.log("New image value is " + $(newVal).val());
+	      tempDiv.setAttribute('resourceValue', $(newVal).val());
 
 	      // TODO: upload image instead of urls
 	      $(temp).attr("src", $(newVal).val());
@@ -308,10 +448,21 @@ function setResource(resourceID){
 		if ($(temp).width() > maxWidth) {
 			$(temp).css("width", $(temp).width() * ratio);
 			$(temp).css("height", $(temp).height() * ratio);
+			$(temp).width($(temp).height() * ratio);
 		}
 		if ($(temp).height() > maxHeight) {
 			$(temp).css("width", $(temp).width() * ratio);
 			$(temp).css("height", $(temp).height() * ratio);
+			$(temp).height($(temp).height() * ratio);
+		}
+
+		if ($(temp).width() < 50) {
+			$(temp).css("width", 50);
+			$(temp).width(50);
+		}
+		if ($(temp).height() < 50) {
+			$(temp).css("height", 50);
+			$(temp).height(50);
 		}
 
 		temp.parentElement.style.width = temp.width + "px"; 
@@ -341,6 +492,7 @@ function setResource(resourceID){
 }
 
 function delResource(resourceID,resourceDivID){
+  if (!confirm("Really delete " + resourceID + "?")) return false;
  
   function getResourceIndex(resourceID, resourceType){
 
@@ -432,6 +584,8 @@ function delResource(resourceID,resourceDivID){
     case 'variable':
       console.log('reducing variableCounter');
       variableCounter-- ;
+      console.log('variableCounter is ' + variableCounter);
+      toggleCalcButton();
       if (variableCounter < 0) { variableCounter = 0 }
       break;
     case 'image':
@@ -492,7 +646,7 @@ function idAlreadyExists(newId) {
 	return (findResourceIdInArray(labelArr, newId) != -1 || findResourceIdInArray(variableArr, newId) != -1 || findResourceIdInArray(imageArr, newId) != -1);
 }
 
-function createResourceDiv(){
+function createResourceDiv(type){
   var newResourceDiv = document.createElement('div');
   newResourceDiv.className = 'resourceDiv block';
   newResourceDiv.id = 'resourceDiv' + resourceCounter;
@@ -500,7 +654,8 @@ function createResourceDiv(){
   while (findResourceIdInArray(resourceArr, newResourceDiv.id) != -1) {
 	newResourceDiv.id = newResourceDiv.id + '_';	
   }
-  newResourceDiv.setAttribute('resourceType', 'resourceDiv');
+  //newResourceDiv.setAttribute('resourceType', 'resourceDiv');
+  newResourceDiv.setAttribute('resourceType', 'resourceDiv' + type);
   newResourceDiv.setAttribute('data-x', 0);
   newResourceDiv.setAttribute('data-y', 0);
   resourceArr.push(newResourceDiv);
@@ -527,7 +682,7 @@ function spawnLabel(){
   $(newLabel).css("width", width);
   $(newLabel).css("height", height);
 
-  var resourceDiv = createResourceDiv();
+  var resourceDiv = createResourceDiv('Label');
   resourceDiv.addEventListener('dblclick', function(){ manageResource(newLabel.id, resourceDiv.id) });
   resourceDiv.style.width = '50px';
   resourceDiv.style.height = '50px';
@@ -562,7 +717,7 @@ function spawnVariable(){
   $(newVariable).css("width", width);
   $(newVariable).css("height", height);
 
-  var resourceDiv = createResourceDiv();
+  var resourceDiv = createResourceDiv('Variable');
   resourceDiv.addEventListener('dblclick' , function(){ manageResource(newVariable.id, resourceDiv.id) });
   resourceDiv.style.width = '50px';
   resourceDiv.style.height = '50px';
@@ -570,6 +725,8 @@ function spawnVariable(){
   resourceDiv.appendChild(newVariable);
 
   variableCounter++;
+  console.log('variableCounter is ' + variableCounter);
+  toggleCalcButton();
   resourceCounter++;
   document.getElementById('sheetContainer').appendChild(resourceDiv);
 
@@ -585,7 +742,8 @@ function spawnImage() {
 	newImage.id = newImage.id + '_';	
   }
   //newImage.placeholder = 'http://orig09.deviantart.net/fe9c/f/2014/231/5/5/dark_souls_sif_by_zedotagger-d7vvhqh.gif';
-  newImage.placeholder = 'http://www.animatedgif.net/animals/dogs/walkdog_e0.gif';
+  //newImage.placeholder = 'http://www.animatedgif.net/animals/dogs/walkdog_e0.gif';
+  newImage.placeholder = 'http://myvmlab.senecacollege.ca:5311/img/placeholder.png';
   newImage.src = newImage.placeholder;
   newImage.setAttribute('resourceType', "image");
   newImage.setAttribute('resourceValue', 0);
@@ -606,11 +764,12 @@ function spawnImage() {
 	  $(newImage).css("height", height);
 	  img.remove();
 
-	  var resourceDiv = createResourceDiv();
+	  var resourceDiv = createResourceDiv('Image');
 	  resourceDiv.addEventListener('dblclick' , function(){ manageResource(newImage.id, resourceDiv.id) });
 	  resourceDiv.style.width = newImage.width + 'px';
 	  resourceDiv.style.height = newImage.height + 'px';
 	  resourceDiv.style.backgroundColor = 'transparent';
+	  resourceDiv.setAttribute('resourceValue', newImage.placeholder);
 	  resourceDiv.appendChild(newImage);
 
 	  imageCounter++;

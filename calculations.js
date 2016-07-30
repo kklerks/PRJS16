@@ -146,6 +146,12 @@ function createCalculation(name, calculation, targetVar, targetEnemy, counter = 
 	alert('A calculation must have a name!');
 	return false;
   }
+  for (var i = 0; i < calcArr.length; i++) {
+	if (counter != i && name == calcArr[i].name) {
+		alert('A calculation with that name already exists!');
+		return false;
+	}
+  }
   console.log('Creating a calculation that targets ' + targetEnemy + ' on ' + targetVar);
   if (targetVar == null || targetEnemy == null) {
 	window.alert('A target variable or player has not been selected!');
@@ -196,12 +202,12 @@ function createCalculation(name, calculation, targetVar, targetEnemy, counter = 
     math.eval(temp);
   }
   catch(err) {
-    window.alert('Invalid syntax!');
+    window.alert('The calculation cannot be evaluated! Please check the syntax of the expression.');
     return false;
   }
   console.log(math.eval(temp));
   if (!isFinite(math.eval(temp))) {
-    window.alert('Invalid expression!');
+    window.alert('The calculation is invalid because it can result in an infinite or undefined number!');
     return false;
   }
 
@@ -213,12 +219,12 @@ function createCalculation(name, calculation, targetVar, targetEnemy, counter = 
     math.eval(temp);
   }
   catch(err) {
-    window.alert('Invalid syntax!');
+    window.alert('The calculation cannot be evaluated! Please check the syntax of the expression.');
     return false;
   }
   console.log(math.eval(temp));
   if (!isFinite(math.eval(temp))) {
-    window.alert('Invalid expression!');
+    window.alert('The calculation is invalid because it can result in an infinite or undefined number!');
     return false;
   }
   // -------------------------------------------------------------------------

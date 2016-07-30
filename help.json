@@ -1,0 +1,50 @@
+[
+  {
+    "header": "Help",
+    "content": "Click on a header from the right-side menu to select a help topic."
+  },
+  {
+    "header": "Accounts",
+    "content": "If you have not already, click the \"Sign Up\" button on the main screen to create an account."
+  },
+  {
+    "header": "The Sheet",
+    "content": "Use the Spawn buttons on the left side of the screen to add resources to the sheet. A resource can be dragged around and resized within the confines of the sheet, but it cannot be placed outside of the sheet or exceed the sheet's dimensions."
+  },
+  {
+    "header": "Saving/Loading",
+    "content": "A sheet can be saved under your account to be used in a game on an Android device or to be edited later."
+  },
+  {
+    "header": "Increase/Decrease",
+    "content": "A sheet's horizontal dimension can be lengthened by pressing the \"Increase\" button and shortened by pressing the \"Decrease\" button. The horizontal length is fixed to fit on an Android screen."
+  },
+  {
+    "header": "Resource Types",
+    "content": "The three resource types available are \"Label\", \"Variable\", and \"Image\". Each resource must have a unique ID."
+  },
+  {
+    "header": "Label",
+    "content": "A Label holds a static text string. The font style and size cannot be changed. The Value of the Label resource determines its text."
+  },
+  {
+    "header": "Variable",
+    "content": "A Variable holds a value that can be changed during gameplay either by a Calculation or by direct input from the host of the game. A Variable's ID is referenced by Calculations and by player input during the game. Its Value determines the default value of the Variable. During a game, a variable may be set either to a number or to text, but only Variables that contain numbers may be used in calculations (a Variable that contains text will be equivalent to a value of 0 if used in a calculation). A Variable that is used in a Calculation may not have its ID changed."
+  },
+  {
+    "header": "Image",
+    "content": "An Image holds the URL of an image to be displayed on the sheet. Images that are larger than the sheet size will be resized automatically to fit, keeping the aspect ratio. Only the URL of the image is saved with the sheet, not the image itself, so the Android device upon which the sheet will be used must have an active Internet connection in order to render the image."
+  },
+  {
+    "header": "Calculations",
+    "content": "Calculations can be created to automate certain mathematical events that may alter the value of a Variable in a game. During the game, a user may bring up the Calculations screen which will contain all the Calculations defined here."
+  },
+  {
+    "header": "Calc. Syntax",
+    "content": "Calculations use standard mathematical syntax. Order of operations is followed and parentheses are allowed. Relational operators may also be used (two equal signs (i.e. '==') must be used to denote equality). A Variable can be referred to by enclosing its ID in square brackets. [?] indicates a value to be supplied by the player when the calculation is performed (e.g. to input the result of a physical dice roll). An @ sign before a Variable refers to the Variable on the sheet of the target, while a Variable without it referes to the Variable on the sheet of the player performing the calculation. The Target Variable refers to the Variable in which the result of the calculation will be stored (the value will be overwritten)."
+  },
+  {
+    "header": "Calc. Examples",
+    "content": "E.g. \"@[Life] - [Strength] * 2\" with the Target Variable \"Life\" means that the target's Life will be set to their current Life minus twice the player's Strength. E.g. \"[Weapon Damage] + [Strength] + [Bonus]\" with the Target Variable \"Attack Strength\" and the Target \"Self\" means that the player's Attack Strength Variable will be set to the sum of their Weapon Damage, Strength, and Bonus variables. E.g. \"[Attack] + [?]\" with the Target Variable \"Attack\" means that player will be prompted to enter a value which will then be added to their sheet's \"Attack\" value."
+  }
+]
