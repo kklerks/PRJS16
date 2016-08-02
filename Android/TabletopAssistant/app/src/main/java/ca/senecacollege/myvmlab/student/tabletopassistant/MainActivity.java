@@ -1,6 +1,8 @@
 package ca.senecacollege.myvmlab.student.tabletopassistant;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.DialogPreference;
 import android.support.design.widget.FloatingActionButton;
@@ -22,6 +24,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -31,6 +35,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
+
+    public String serverResponseJSON; //used for storing server responses
+    public String username; //stores the username if the user is logged in
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,12 +113,13 @@ public class MainActivity extends AppCompatActivity {
 
     /*
      * User pressed login in the login dialog
-     * Returns true if account was able to be created, false otherwise
      */
-    public boolean login(String user, String password) {
+    public void login(String user, String password) {
         Log.d("LOGIN","Attempted to login with credentials: User:" + user + " Password:" + password);
 
-        return true; //TEMP
+        LoginTask lt = new LoginTask(this);
+        lt.execute(user,password);
+
     }
 
     /*
@@ -170,51 +179,15 @@ public class MainActivity extends AppCompatActivity {
 
     /*
      * User pressed register in the register dialog
-     *
-     * Returns true if account was able to be created, false otherwise
      */
-    public boolean createAccount(String user, String email, String password, String passwordConfirm) {
+    public void createAccount(String user, String email, String password, String passwordConfirm) {
         Log.d("REGISTER","Attempted to register with credentials: User:" + user + " Email:" + email + " Password:" + password + " Confirm password:" + passwordConfirm);
 
-        /*
-         * http://stackoverflow.com/questions/4470936/how-to-do-a-http-post-in-android
-         * TODO: this probably all needs to be moved to another activity with asynctask to work
-         */
-
-        HttpURLConnection connection;
-        OutputStreamWriter request = null;
-        String response = "";
-        String parameters = "signupUsername="+user+"&signupPassword"+password+"&signupEmail"+email;
-
-        try {
-            URL url = new URL("http://student.myvmlab.senecacollege.ca:5311/register.php");
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
-            connection.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
-            connection.setRequestMethod("POST");
-
-            request = new OutputStreamWriter(connection.getOutputStream()); //TODO: (crashes over here)
-            request.write(parameters);
-            request.flush();
-            request.close();
-
-            String line = "";
-            InputStreamReader isr = new InputStreamReader(connection.getInputStream());
-            BufferedReader reader = new BufferedReader(isr);
-            StringBuilder sb = new StringBuilder();
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-            response = sb.toString();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        //TODO: do some client-sided validation here before sending off to server
 
 
-        Log.d("PHP",response);
-
-        return true; //TEMP
+        RegisterTask rt = new RegisterTask(this);
+        rt.execute(user,email,password,passwordConfirm);
     }
 
 
@@ -224,9 +197,229 @@ public class MainActivity extends AppCompatActivity {
      */
     public void buttonPlayAsGuest(View v) {
         Log.d("BUTTON","Pressed play as guest.");
-        Toast.makeText(getApplicationContext(),
+        Toast.makeText(
+                getApplicationContext(),
                 "Not implemented yet.",
-                Toast.LENGTH_SHORT).show();
+                Toast.LENGTH_SHORT
+        ).show();
+
+        //TODO: Implement redirect to activity here (same as success for logging in)
+
+        magicTest();
+    }
+
+
+    /*
+     * Connects to the network when the user tries to log in
+     */
+    protected class LoginTask extends AsyncTask <String,Void,String> {
+
+        Context context;
+        LoginTask(Context c) {
+            context = c;
+        }
+
+
+        @Override
+        protected String doInBackground(String... credentials) {
+            /*
+             * http://stackoverflow.com/questions/4470936/how-to-do-a-http-post-in-android
+             */
+            Log.d("doInBackground",credentials[0] + '/' + credentials[1]);
+
+            URL url = null;
+            HttpURLConnection connection;
+            OutputStreamWriter request = null;
+            String response = "";
+            //String parameters = "signupUsername=" + credentials[0] + "&signupEmail=" + credentials[1] + "&signupPassword=" + credentials[2] + "&signupPasswordConfirm=" + credentials[3];
+            String parameters = "loginUsername=" + credentials[0] + "&loginPassword=" + credentials[1] + "&ANDROID=YES";
+
+            Log.d("doInBackground","Parameters:" + parameters);
+
+            try {
+                url = new URL("http://myvmlab.senecacollege.ca:5311/login.php");
+
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+                connection.setRequestMethod("POST");
+
+                request = new OutputStreamWriter(connection.getOutputStream());
+                request.write(parameters);
+                request.flush();
+                request.close();
+
+                String line = "";
+                InputStreamReader isr = new InputStreamReader(connection.getInputStream());
+                BufferedReader reader = new BufferedReader(isr);
+                StringBuilder sb = new StringBuilder();
+                while ((line = reader.readLine()) != null) {
+                    //Log.d("FROMWEBSITE:",line);
+                    sb.append(line);
+                }
+                response = sb.toString();
+                Log.d("RESPONSE:",response);
+
+            } catch (Exception e) {
+                Log.e("LOGIN","",e);
+                response = null;
+            }
+
+            return response;
+
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Log.d("PHP (onPostExecute)", s);
+            Context c = context;
+            serverResponseJSON = s;
+
+            try {
+
+                JSONObject json = new JSONObject(serverResponseJSON);
+                String status = json.getString("status");
+                Log.d("STATUS", status + ' ' + serverResponseJSON);
+
+                if (status.equals("SUCCESS")) {
+
+                    username = json.getString("username");
+
+
+                    //TODO: finish success (redirect to another activity?)
+
+
+                } else if (status.equals("FAILURE")) {
+                    String msg = json.getString("msg");
+                    new AlertDialog.Builder(c)
+                            .setTitle("ERROR")
+                            .setMessage("There was an error processing your request.\n\nThe server responded:\n" + msg)
+                            .setPositiveButton("OK", null)
+                            .show();
+                } else {
+                    new AlertDialog.Builder(c)
+                            .setTitle("ERROR")
+                            .setMessage("There was an error processing your request.\nPlease try again later.")
+                            .setPositiveButton("OK", null)
+                            .show();
+                }
+            } catch (Exception e) {
+                Log.e("PARSE_RESPONSE","",e);
+            }
+        }
+
+
+    }
+
+
+    /*
+     * Connects to the network when the user tries to register an account
+     */
+    protected class RegisterTask extends AsyncTask <String,Void,String> {
+
+        Context context;
+        RegisterTask(Context c) {
+            context = c;
+        }
+
+        @Override
+        protected String doInBackground(String... credentials) {
+            /*
+             * http://stackoverflow.com/questions/4470936/how-to-do-a-http-post-in-android
+             */
+            Log.d("doInBackground",credentials[0] + '/' + credentials[1] + '/' + credentials[2]);
+
+            URL url = null;
+            HttpURLConnection connection;
+            OutputStreamWriter request = null;
+            String response = "";
+            //String parameters = "signupUsername=" + credentials[0] + "&signupEmail=" + credentials[1] + "&signupPassword=" + credentials[2] + "&signupPasswordConfirm=" + credentials[3];
+            String parameters = "signupUsername=" + credentials[0] + "&signupEmail=" + credentials[1] + "&signupPassword=" + credentials[2] + "&ANDROID=YES";
+
+            Log.d("doInBackground","Parameters:" + parameters);
+
+            try {
+                url = new URL("http://myvmlab.senecacollege.ca:5311/register.php");
+
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+                connection.setRequestMethod("POST");
+
+                request = new OutputStreamWriter(connection.getOutputStream());
+                request.write(parameters);
+                request.flush();
+                request.close();
+
+                String line = "";
+                InputStreamReader isr = new InputStreamReader(connection.getInputStream());
+                BufferedReader reader = new BufferedReader(isr);
+                StringBuilder sb = new StringBuilder();
+                while ((line = reader.readLine()) != null) {
+                    //Log.d("FROMWEBSITE:",line);
+                    sb.append(line);
+                }
+                response = sb.toString();
+                Log.d("RESPONSE:",response);
+
+            } catch (Exception e) {
+                Log.e("REGISTER","",e);
+                response = null;
+            }
+
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Log.d("PHP (onPostExecute)", s);
+            Context c = context;
+            serverResponseJSON = s;
+
+            try {
+
+                JSONObject json = new JSONObject(serverResponseJSON);
+                String status = json.getString("status");
+                Log.d("STATUS",status + ' ' + serverResponseJSON);
+
+                if (status.equals("SUCCESS")) {
+                    new AlertDialog.Builder(c)
+                            .setTitle("SUCCESS")
+                            .setMessage("You have successfully created your account... please check your email to confirm your account before signing in.")
+                            .setPositiveButton("OK",null)
+                            .show();
+                } else if (status.equals("FAILURE")) {
+                    String msg = json.getString("msg");
+                    new AlertDialog.Builder(c)
+                            .setTitle("ERROR")
+                            .setMessage("There was an error processing your request.\n\nThe server responded:\n" + msg)
+                            .setPositiveButton("OK",null)
+                            .show();
+                } else {
+                    new AlertDialog.Builder(c)
+                            .setTitle("ERROR")
+                            .setMessage("There was an error processing your request.\nPlease try again later.")
+                            .setPositiveButton("OK",null)
+                            .show();
+                }
+
+            } catch (Exception e) {
+                Log.e("PARSE_RESPONSE","",e);
+            }
+
+        }
+
+    }
+
+    void magicTest() {
+        Log.d("MAGICTEST","Inside the magic test.");
+        /*
+         * Temporary function for testing things (currently called by pressing play as guest button)
+         */
+
+
     }
 
 }
+
+
