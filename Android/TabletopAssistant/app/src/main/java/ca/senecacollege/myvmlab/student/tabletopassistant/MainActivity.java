@@ -4,15 +4,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.DialogPreference;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutCompat;
-import android.support.v7.widget.Toolbar;
-import android.test.suitebuilder.TestMethod;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
@@ -28,9 +21,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -417,6 +408,44 @@ public class MainActivity extends AppCompatActivity {
          * Temporary function for testing things (currently called by pressing play as guest button)
          */
 
+        final DBSheets ds = new DBSheets();
+        final EditText et = new EditText(this);
+
+        //TEST1: echos to log the list of sheets belonging to the user
+        new AlertDialog.Builder(this)
+                .setTitle("TEST")
+                .setMessage("Enter a username")
+                .setView(et)
+                .setNegativeButton("Cancel",null)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ds.fetchSheetNameList(et.getText().toString());
+                            }
+                        }
+                )
+                .show();
+
+
+        /*
+        //TEST2: echos to log an actual sheet
+        et.setInputType(InputType.TYPE_CLASS_NUMBER);
+        new AlertDialog.Builder(this)
+                .setTitle("TEST")
+                .setMessage("Enter a sheetID belonging to the user")
+                .setView(et)
+                .setNegativeButton("Cancel",null)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ds.fetchSheetById(Integer.parseInt(et.getText().toString()));
+                            }
+                        }
+                )
+                .show();
+        */
 
     }
 
