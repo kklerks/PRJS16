@@ -2,9 +2,9 @@ package ca.senecacollege.myvmlab.student.tabletopassistant;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.IntegerRes;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -188,16 +188,27 @@ public class MainActivity extends AppCompatActivity {
      *
      */
     public void buttonPlayAsGuest(View v) {
-        Log.d("BUTTON","Pressed play as guest.");
-        Toast.makeText(
-                getApplicationContext(),
-                "Not implemented yet.",
-                Toast.LENGTH_SHORT
-        ).show();
 
-        //TODO: Implement redirect to activity here (same as success for logging in)
+        new AlertDialog.Builder(this)
+                .setTitle("GUEST")
+                .setMessage("You are about to play as a guest. Some features may not be available unless you create and verify an account and then log in with it.")
+                .setPositiveButton("Continue",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
 
-        magicTest();
+                                Intent intent = new Intent(getBaseContext(),PlayMenuActivity.class);
+                                intent.putExtra("USERNAME","GUEST");
+                                intent.putExtra("ISUSER",false); //false for guest
+                                startActivity(intent);
+
+                            }
+                        }
+                )
+                .setNegativeButton("Cancel",null)
+                .show();
+
+        //magicTest();
     }
 
 
@@ -250,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
                     sb.append(line);
                 }
                 response = sb.toString();
-                Log.d("RESPONSE:",response);
+                //Log.d("RESPONSE:",response);
 
             } catch (Exception e) {
                 Log.e("LOGIN","",e);
@@ -271,15 +282,18 @@ public class MainActivity extends AppCompatActivity {
 
                 JSONObject json = new JSONObject(serverResponseJSON);
                 String status = json.getString("status");
-                Log.d("STATUS", status + ' ' + serverResponseJSON);
+                //Log.d("STATUS", status + ' ' + serverResponseJSON);
 
                 if (status.equals("SUCCESS")) {
 
+                    Log.d("LOGIN","Successfully logged in");
                     username = json.getString("username");
 
-
-                    //TODO: finish success (redirect to another activity?)
-
+                    //Open PlayMenuActivity
+                    Intent intent = new Intent(getBaseContext(),PlayMenuActivity.class);
+                    intent.putExtra("USERNAME",username);
+                    intent.putExtra("ISUSER",true);
+                    startActivity(intent);
 
                 } else if (status.equals("FAILURE")) {
                     String msg = json.getString("msg");
