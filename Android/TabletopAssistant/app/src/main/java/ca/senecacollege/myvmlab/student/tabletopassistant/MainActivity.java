@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.IntegerRes;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -409,9 +410,10 @@ public class MainActivity extends AppCompatActivity {
          */
 
         final DBSheets ds = new DBSheets();
-        final EditText et = new EditText(this);
 
+        /*
         //TEST1: echos to log the list of sheets belonging to the user
+        final EditText et = new EditText(this);
         new AlertDialog.Builder(this)
                 .setTitle("TEST")
                 .setMessage("Enter a username")
@@ -426,26 +428,41 @@ public class MainActivity extends AppCompatActivity {
                         }
                 )
                 .show();
+         */
 
 
-        /*
+
         //TEST2: echos to log an actual sheet
-        et.setInputType(InputType.TYPE_CLASS_NUMBER);
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        final TextView userText = new TextView(this);
+        userText.setText("Username:");
+        layout.addView(userText);
+        final EditText user = new EditText(this);
+        layout.addView(user);
+        final TextView sheetIdText = new TextView(this);
+        sheetIdText.setText("Sheet Id:");
+        layout.addView(sheetIdText);
+        final EditText sheetId = new EditText(this);
+        layout.addView(sheetId);
+
+
         new AlertDialog.Builder(this)
                 .setTitle("TEST")
                 .setMessage("Enter a sheetID belonging to the user")
-                .setView(et)
+                .setView(layout)
                 .setNegativeButton("Cancel",null)
                 .setPositiveButton("OK",
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                ds.fetchSheetById(Integer.parseInt(et.getText().toString()));
+                                ds.fetchSheetFromServer(user.getText().toString(), Integer.parseInt(sheetId.getText().toString()));
                             }
                         }
                 )
                 .show();
-        */
+
 
     }
 

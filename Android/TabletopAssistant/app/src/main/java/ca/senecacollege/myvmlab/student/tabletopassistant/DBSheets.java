@@ -96,22 +96,30 @@ public class DBSheets {
     /*
      * Accepts a username and sheet id (username currently hardcoded in) and returns the contents of the sheet matching the sheet id and belonging to the user
      */
-    void fetchSheetById(int id) {
+    void fetchSheetFromServer(String username, int id) {
 
-        new fetchSheetByIdTask().execute(Integer.toString(id));
+        UsernameAndSheetId usernameAndSheetId = new UsernameAndSheetId();
+        usernameAndSheetId.username = username;
+        usernameAndSheetId.sheetId = id;
+
+        new fetchSheetFromServerTask().execute(usernameAndSheetId);
 
     }
 
-    protected class fetchSheetByIdTask extends AsyncTask <String,Void,String> {
+    private class UsernameAndSheetId {
+        public String username;
+        public int sheetId;
+    }
+
+    protected class fetchSheetFromServerTask extends AsyncTask <UsernameAndSheetId,Void,String> {
 
         @Override
-        protected String doInBackground(String... id) {
+        protected String doInBackground(UsernameAndSheetId... credentials) {
             URL url = null;
             HttpURLConnection connection;
             OutputStreamWriter request = null;
             String response = "";
-            String username = "testme123"; //HARDCODED TEMP
-            String parameters = "USERNAME=" + username + "&SHEET_ID=" + id[0] + "&ANDROID=YES";
+            String parameters = "USERNAME=" + credentials[0].username + "&SHEET_ID=" + credentials[0].sheetId + "&ANDROID=YES";
 
             Log.d("doInBackground","Parameters:" + parameters);
 
