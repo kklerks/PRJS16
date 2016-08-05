@@ -31,16 +31,30 @@ public class RegisterAndLogin {
     public void createAccount(String user, String email, String password, String passwordConfirm) {
         Log.d("REGISTER","Attempted to register with credentials: User:" + user + " Email:" + email + " Password:" + password + " Confirm password:" + passwordConfirm);
 
-        if (password.equals(passwordConfirm)) {
-            RegisterTask rt = new RegisterTask();
-            rt.execute(user, email, password, passwordConfirm);
+        if (!password.equals(passwordConfirm)) {
 
-        } else {
             new AlertDialog.Builder(context)
                     .setTitle("ERROR")
                     .setMessage("There was an error processing your request.\n\nPasswords do not match.\n")
                     .setPositiveButton("OK",null)
                     .show();
+
+        } else {
+
+            if (user.length() <= 32) {
+
+                RegisterTask rt = new RegisterTask();
+                rt.execute(user, email, password, passwordConfirm);
+
+            } else {
+
+                new AlertDialog.Builder(context)
+                        .setTitle("ERROR")
+                        .setMessage("Username is too long. Please limit your username to 32 characters.\n")
+                        .setPositiveButton("OK",null)
+                        .show();
+
+            }
         }
     }
 

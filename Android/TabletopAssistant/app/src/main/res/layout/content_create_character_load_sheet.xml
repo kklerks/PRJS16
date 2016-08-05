@@ -9,8 +9,8 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="ca.senecacollege.myvmlab.student.tabletopassistant.CreateCharacterActivity"
-    tools:showIn="@layout/activity_create_character">
+    tools:context="ca.senecacollege.myvmlab.student.tabletopassistant.CreateCharacterLoadSheetActivity"
+    tools:showIn="@layout/activity_create_character_load_sheet">
 
     <ListView
         android:layout_width="wrap_content"

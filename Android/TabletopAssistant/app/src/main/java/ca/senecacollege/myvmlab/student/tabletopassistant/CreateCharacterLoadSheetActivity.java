@@ -1,21 +1,16 @@
 package ca.senecacollege.myvmlab.student.tabletopassistant;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.lang.reflect.Array;
-
-public class CreateCharacterActivity extends AppCompatActivity {
+public class CreateCharacterLoadSheetActivity extends AppCompatActivity {
 
     public String username;
     public boolean isUser;
@@ -25,17 +20,17 @@ public class CreateCharacterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_character);
+        setContentView(R.layout.activity_create_character_load_sheet);
 
         Bundle extras = getIntent().getExtras();
-        username = extras.getString("USERNAME");
+        username = extras.getString("Choose a sheet below");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.createCharacterToolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(username);
 
         final int[] listSheetIds = extras.getIntArray("listSheetIds");
-        String[] listSheetVersions = extras.getStringArray("listSheetVersions");
+        final String[] listSheetVersions = extras.getStringArray("listSheetVersions");
         final String[] listSheetNames = extras.getStringArray("listSheetNames");
 
         lv = (ListView) findViewById(R.id.sheetListView);
@@ -52,6 +47,12 @@ public class CreateCharacterActivity extends AppCompatActivity {
 
                 if (index < listSheetNames.length) {
                     getSheet(listSheetIds[index]);
+                } else {
+                    new AlertDialog.Builder(getApplicationContext())
+                            .setTitle("ERROR")
+                            .setMessage("Failed to find sheet.")
+                            .setPositiveButton("OK", null)
+                            .show();
                 }
             }
         });

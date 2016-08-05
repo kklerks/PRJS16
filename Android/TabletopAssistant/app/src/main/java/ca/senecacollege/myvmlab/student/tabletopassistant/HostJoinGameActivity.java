@@ -1,8 +1,11 @@
 package ca.senecacollege.myvmlab.student.tabletopassistant;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -12,6 +15,7 @@ public class HostJoinGameActivity extends AppCompatActivity {
 
     public String username;
     public boolean isUser;
+    public String sheet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +25,7 @@ public class HostJoinGameActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         username = extras.getString("USERNAME");
         isUser = extras.getBoolean("ISUSER");
+        sheet = extras.getString("SHEET");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.hostJoinGameActivityToolbar);
         setSupportActionBar(toolbar);
@@ -38,6 +43,26 @@ public class HostJoinGameActivity extends AppCompatActivity {
                 "Not implemented yet.",
                 Toast.LENGTH_SHORT
         ).show();
+
+        /*
+        if (sheet != null) {
+
+            Intent intent = new Intent(this,JoinGameActivity.class);
+            intent.putExtra("USERNAME",username);
+            intent.putExtra("ISUSER",true);
+            intent.putExtra("SHEET",sheet);
+
+            startActivity(intent);
+
+        } else {
+
+            new AlertDialog.Builder(this)
+                    .setTitle("ERROR")
+                    .setMessage("Please select a sheet first.")
+                    .setPositiveButton("OK",null)
+                    .show();
+        }
+        */
     }
 
     protected void openHostGame(View v) {
@@ -46,6 +71,16 @@ public class HostJoinGameActivity extends AppCompatActivity {
                 "Not implemented yet.",
                 Toast.LENGTH_SHORT
         ).show();
+
+        /*
+        Intent intent = new Intent(this,HostGameActivity.class);
+        intent.putExtra("USERNAME",username);
+        intent.putExtra("ISUSER",true);
+        intent.putExtra("SHEET",sheet);
+
+        startActivity(intent);
+        */
+
     }
 
     protected void openLoadCharacter(View v) {

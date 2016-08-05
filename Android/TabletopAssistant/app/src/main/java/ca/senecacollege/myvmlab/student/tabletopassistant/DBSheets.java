@@ -3,6 +3,7 @@ package ca.senecacollege.myvmlab.student.tabletopassistant;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -13,7 +14,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class DBSheets {
 
@@ -107,7 +107,7 @@ public class DBSheets {
                         listSheetNames[i] = curr.getString("sheet_name");
                     }
 
-                    Intent intent = new Intent(context,CreateCharacterActivity.class);
+                    Intent intent = new Intent(context,CreateCharacterLoadSheetActivity.class);
                     intent.putExtra("USERNAME",username);
                     intent.putExtra("listSheetIds",listSheetIds);
                     intent.putExtra("listSheetVersions",listSheetVersions);
@@ -115,7 +115,25 @@ public class DBSheets {
                     context.startActivity(intent);
 
                 } else if (json.getString("status").equals("FAILURE")) {
-                    Log.d("PARSEFAIL",json.getString("msg"));
+                    String msg = json.getString("msg");
+
+                    Log.d("PARSEFAIL",msg);
+
+                    if (msg.equals("No sheets found.")) {
+                        new AlertDialog.Builder(context)
+                                .setTitle("NO SHEETS FOUND")
+                                .setMessage("You have not created any sheets.\nYou need to create a sheet from the web designer.")
+                                .setPositiveButton("OK", null)
+                                .show();
+                    } else {
+                        new AlertDialog.Builder(context)
+                                .setTitle("ERROR")
+                                .setMessage("Could not fetch your sheets from server.\nThe server responded: " + msg)
+                                .setPositiveButton("OK", null)
+                                .show();
+                    }
+
+
                 }
 
             } catch (Exception e) {
@@ -192,12 +210,21 @@ public class DBSheets {
 
             try {
                 JSONObject json = new JSONObject(s);
-                Log.d("TEST",json.toString(4));
+                //Log.d("TEST",json.toString(4));
 
                 if (json.getString("status").equals("SUCCESS")) {
 
                     JSONObject sheet = new JSONObject(json.getString("sheet")); //the sheet itself
                     Log.d("TEST",sheet.toString(4));
+
+                    /*
+                    Intent intent = new Intent(context,CreateCharacterActivity.class);
+                    intent.putExtra("USERNAME",username);
+                    intent.putExtra("SHEET",sheet.toString());
+
+                    context.startActivity(intent);
+                    */
+
 
                 } else if (json.getString("status").equals("FAILURE")) {
                     Log.d("PARSEFAIL",json.getString("msg"));
