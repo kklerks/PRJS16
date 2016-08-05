@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
         new AlertDialog.Builder(this)
                 .setTitle("GUEST")
-                .setMessage("You are about to play as a guest. Some features may not be available unless you create and verify an account and then log in with it.")
+                .setMessage("You are about to play as a guest. Some features may be unavailable unless you create and verify an account and then log in with it.")
                 .setPositiveButton("Continue",
                         new DialogInterface.OnClickListener() {
                             @Override
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MAGICTEST","Inside the magic test.");
 
 
-        final DBSheets ds = new DBSheets();
+        final DBSheets ds = new DBSheets(this);
 
         /*
         //TEST1: echos to log the list of sheets belonging to the user

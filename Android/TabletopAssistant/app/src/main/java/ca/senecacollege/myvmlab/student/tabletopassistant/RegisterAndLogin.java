@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -33,6 +34,7 @@ public class RegisterAndLogin {
         if (password.equals(passwordConfirm)) {
             RegisterTask rt = new RegisterTask();
             rt.execute(user, email, password, passwordConfirm);
+
         } else {
             new AlertDialog.Builder(context)
                     .setTitle("ERROR")
@@ -46,6 +48,15 @@ public class RegisterAndLogin {
      * Connects to the network when the user tries to register an account
      */
     protected class RegisterTask extends AsyncTask <String,Void,String> {
+
+        @Override
+        protected void onPreExecute() {
+            Toast.makeText(
+                    context,
+                    "Checking account -- please wait.",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
 
         @Override
         protected String doInBackground(String... credentials) {
@@ -97,7 +108,7 @@ public class RegisterAndLogin {
 
         @Override
         protected void onPostExecute(String s) {
-            Log.d("PHP (onPostExecute)", s);
+            //Log.d("PHP (onPostExecute)", s);
             serverResponseJSON = s;
 
             try {
@@ -129,6 +140,12 @@ public class RegisterAndLogin {
 
             } catch (Exception e) {
                 Log.e("PARSE_RESPONSE","",e);
+
+                new AlertDialog.Builder(context)
+                        .setTitle("ERROR")
+                        .setMessage("There was an error processing your request. The server may be down or there is no internet access from your device.\nPlease check your internet connection or try again later.")
+                        .setPositiveButton("OK",null)
+                        .show();
             }
         }
     }
@@ -150,17 +167,24 @@ public class RegisterAndLogin {
     protected class LoginTask extends AsyncTask<String,Void,String> {
 
         @Override
+        protected void onPreExecute() {
+            Toast.makeText(
+                    context,
+                    "Logging in -- please wait.",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+
+        @Override
         protected String doInBackground(String... credentials) {
             /*
              * http://stackoverflow.com/questions/4470936/how-to-do-a-http-post-in-android
              */
-            //Log.d("doInBackground",credentials[0] + '/' + credentials[1]);
 
             URL url = null;
             HttpURLConnection connection;
             OutputStreamWriter request = null;
             String response = "";
-            //String parameters = "signupUsername=" + credentials[0] + "&signupEmail=" + credentials[1] + "&signupPassword=" + credentials[2] + "&signupPasswordConfirm=" + credentials[3];
             String parameters = "loginUsername=" + credentials[0] + "&loginPassword=" + credentials[1] + "&ANDROID=YES";
 
             //Log.d("doInBackground","Parameters:" + parameters);
@@ -200,7 +224,6 @@ public class RegisterAndLogin {
 
         @Override
         protected void onPostExecute(String s) {
-            //Log.d("PHP (onPostExecute)", s);
 
             serverResponseJSON = s;
 
@@ -237,6 +260,13 @@ public class RegisterAndLogin {
                 }
             } catch (Exception e) {
                 Log.e("PARSE_RESPONSE","",e);
+
+                new AlertDialog.Builder(context)
+                        .setTitle("ERROR")
+                        .setMessage("There was an error processing your request. The server may be down or there is no internet access from your device.\nPlease check your internet connection or try again later.")
+                        .setPositiveButton("OK",null)
+                        .show();
+
             }
         }
     }

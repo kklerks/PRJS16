@@ -1,5 +1,7 @@
 package ca.senecacollege.myvmlab.student.tabletopassistant;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -11,18 +13,30 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class DBSheets {
 
+    public Context context;
+    public String json;
+    public String username;
+
+    public DBSheets(Context c) {
+        context = c;
+    }
+
     /*
-     * Accepts a username and prints a JSON object containing the list of the sheets
+     * Accepts a username and fetches a list of sheets the user created
+     * List is then passed to CreateCharacter activity if successful
+     *
+     * Called when user presses Create Character button
      */
     void fetchSheetNameList(String username) {
 
+        this.username = username;
         new fetchSheetNameListTask().execute(username);
 
     }
-
     protected class fetchSheetNameListTask extends AsyncTask <String, Void, String> {
 
         @Override
@@ -31,9 +45,9 @@ public class DBSheets {
             HttpURLConnection connection;
             OutputStreamWriter request = null;
             String response = "";
-            String parameters = "USERNAME=" + username[0]  + "&ANDROID=YES";
+            String parameters = "USERNAME=" + username[0] + "&ANDROID=YES";
 
-            Log.d("doInBackground","Parameters:" + parameters);
+            //Log.d("doInBackground","Parameters:" + parameters);
 
             try {
                 url = new URL("http://myvmlab.senecacollege.ca:5311/design/sl.php");
@@ -56,7 +70,7 @@ public class DBSheets {
                     sb.append(line);
                 }
                 response = sb.toString();
-                Log.d("RESPONSE:",response);
+                //Log.d("RESPONSE:",response);
 
             } catch (Exception e) {
                 Log.e("FetchSheetNameList","",e);
@@ -71,7 +85,7 @@ public class DBSheets {
 
             try {
                 JSONObject json = new JSONObject(s);
-                Log.d("TEST",json.toString(4));
+                //Log.d("TEST",json.toString(4));
 
                 if (json.getString("status").equals("SUCCESS")) {
 
@@ -80,6 +94,25 @@ public class DBSheets {
 
                     Log.d("SheetList",sheetList.toString());
 
+                    int [] listSheetIds = new int[sheetList.length()];
+                    String[] listSheetVersions = new String[sheetList.length()];
+                    String[] listSheetNames = new String[sheetList.length()];
+
+
+                    for (int i = 0; i < sheetList.length(); i++) {
+                        JSONObject curr = sheetList.getJSONObject(i);
+
+                        listSheetIds[i] = curr.getInt("sheet_id");
+                        listSheetVersions[i] = curr.getString("version");
+                        listSheetNames[i] = curr.getString("sheet_name");
+                    }
+
+                    Intent intent = new Intent(context,CreateCharacterActivity.class);
+                    intent.putExtra("USERNAME",username);
+                    intent.putExtra("listSheetIds",listSheetIds);
+                    intent.putExtra("listSheetVersions",listSheetVersions);
+                    intent.putExtra("listSheetNames",listSheetNames);
+                    context.startActivity(intent);
 
                 } else if (json.getString("status").equals("FAILURE")) {
                     Log.d("PARSEFAIL",json.getString("msg"));

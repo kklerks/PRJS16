@@ -1,5 +1,6 @@
 package ca.senecacollege.myvmlab.student.tabletopassistant;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
@@ -77,4 +78,15 @@ public class PlayMenuActivity extends AppCompatActivity {
                 Toast.LENGTH_SHORT
         ).show();
     }
+
+    protected void openPlay(View v) {
+
+        //Open PlayMenuActivity
+        Intent intent = new Intent(this,HostJoinGameActivity.class);
+        intent.putExtra("USERNAME",username);
+        intent.putExtra("ISUSER",true);
+        startActivity(intent);
+
+    }
+
 }

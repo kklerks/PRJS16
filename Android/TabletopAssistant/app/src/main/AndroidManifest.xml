@@ -23,6 +23,14 @@
         <activity
             android:name=".PlayMenuActivity"
             android:label="@string/title_activity_play_menu"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".HostJoinGameActivity"
+            android:label="@string/title_activity_host_join_game"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".CreateCharacterActivity"
+            android:label="@string/title_activity_create_character"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
