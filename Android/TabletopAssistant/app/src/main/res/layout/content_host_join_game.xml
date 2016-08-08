@@ -19,13 +19,15 @@
         android:text="JOIN GAME"
         android:id="@+id/button8"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
         android:background="@color/buttonBackground"
         android:textColor="@color/buttonText"
         android:layout_marginTop="10dp"
         android:onClick="openJoinGame"
 
-        />
+        android:layout_alignRight="@+id/button9"
+        android:layout_alignEnd="@+id/button9"
+        android:layout_alignLeft="@+id/button9"
+        android:layout_alignStart="@+id/button9"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -33,30 +35,34 @@
         android:text="HOST GAME"
         android:id="@+id/button9"
         android:layout_above="@+id/button8"
-        android:layout_centerHorizontal="true"
         android:background="@color/buttonBackground"
         android:textColor="@color/buttonText"
         android:layout_marginTop="10dp"
         android:onClick="openHostGame"
-        />
+        android:layout_alignRight="@+id/button10"
+        android:layout_alignEnd="@+id/button10"
+        android:layout_alignLeft="@+id/button10"
+        android:layout_alignStart="@+id/button10"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="LOAD CHARACTER"
+        android:text="LOAD SAVED SHEET"
         android:id="@+id/button10"
         android:layout_above="@+id/button9"
-        android:layout_centerHorizontal="true"
         android:background="@color/buttonBackground"
         android:textColor="@color/buttonText"
         android:layout_marginTop="10dp"
         android:onClick="openLoadCharacter"
-        />
+        android:layout_alignRight="@+id/button11"
+        android:layout_alignEnd="@+id/button11"
+        android:layout_alignLeft="@+id/button11"
+        android:layout_alignStart="@+id/button11"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CREATE CHARACTER"
+        android:text="LOAD CREATED SHEET"
         android:id="@+id/button11"
         android:layout_above="@+id/button10"
         android:layout_centerHorizontal="true"

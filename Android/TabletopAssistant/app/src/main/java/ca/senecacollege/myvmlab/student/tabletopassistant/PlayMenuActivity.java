@@ -40,11 +40,11 @@ public class PlayMenuActivity extends AppCompatActivity {
     /*
      * Called when logout button is pressed
      */
-    protected void logoutPrompt(View v) {
+    public void logoutPrompt(View v) {
         logout();
     }
 
-    protected void logout() {
+    public void logout() {
         new AlertDialog.Builder(this)
                 .setTitle("LOGOUT")
                 .setMessage("Log out and return to the main menu?")
@@ -61,7 +61,7 @@ public class PlayMenuActivity extends AppCompatActivity {
     }
 
 
-    protected void openTutorial(View v) {
+    public void openTutorial(View v) {
 
         Toast.makeText(
                 getApplicationContext(),
@@ -70,7 +70,7 @@ public class PlayMenuActivity extends AppCompatActivity {
         ).show();
     }
 
-    protected void openOptions(View v) {
+    public void openOptions(View v) {
 
         Toast.makeText(
                 getApplicationContext(),
@@ -79,12 +79,12 @@ public class PlayMenuActivity extends AppCompatActivity {
         ).show();
     }
 
-    protected void openPlay(View v) {
+    public void openPlay(View v) {
 
         //Open PlayMenuActivity
         Intent intent = new Intent(this,HostJoinGameActivity.class);
         intent.putExtra("USERNAME",username);
-        intent.putExtra("ISUSER",true);
+        intent.putExtra("ISUSER", isUser);
         startActivity(intent);
 
     }

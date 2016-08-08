@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -195,7 +196,6 @@ public class DBSheets {
                     sb.append(line);
                 }
                 response = sb.toString();
-                //Log.d("RESPONSE:",response);
 
             } catch (Exception e) {
                 Log.e("FetchSheetNameList","",e);
@@ -215,15 +215,13 @@ public class DBSheets {
                 if (json.getString("status").equals("SUCCESS")) {
 
                     JSONObject sheet = new JSONObject(json.getString("sheet")); //the sheet itself
-                    Log.d("TEST",sheet.toString(4));
+                    Log.d("TEST", sheet.toString(4));
 
-                    /*
-                    Intent intent = new Intent(context,CreateCharacterActivity.class);
-                    intent.putExtra("USERNAME",username);
-                    intent.putExtra("SHEET",sheet.toString());
+                    Intent intent = new Intent(context, SheetUI.class);
+                    intent.putExtra("loadType", "web");
+                    intent.putExtra("sheet", sheet.toString());
 
                     context.startActivity(intent);
-                    */
 
 
                 } else if (json.getString("status").equals("FAILURE")) {

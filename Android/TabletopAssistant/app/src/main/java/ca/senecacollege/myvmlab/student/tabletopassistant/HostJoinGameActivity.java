@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 public class HostJoinGameActivity extends AppCompatActivity {
@@ -27,71 +28,46 @@ public class HostJoinGameActivity extends AppCompatActivity {
         isUser = extras.getBoolean("ISUSER");
         sheet = extras.getString("SHEET");
 
+        if (!isUser) {
+            Button button = (Button) findViewById(R.id.button9);
+            button.setEnabled(false);
+            button.setAlpha((float) 0.5);
+        }
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.hostJoinGameActivityToolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(username);
 
     }
 
-    protected void returnToPlayMenu(View v) {
+    public void returnToPlayMenu(View v) {
         finish();
     }
 
-    protected void openJoinGame(View v) {
-        Toast.makeText(
-                getApplicationContext(),
-                "Not implemented yet.",
-                Toast.LENGTH_SHORT
-        ).show();
-
-        /*
-        if (sheet != null) {
-
-            Intent intent = new Intent(this,JoinGameActivity.class);
-            intent.putExtra("USERNAME",username);
-            intent.putExtra("ISUSER",true);
-            intent.putExtra("SHEET",sheet);
-
-            startActivity(intent);
-
-        } else {
-
-            new AlertDialog.Builder(this)
-                    .setTitle("ERROR")
-                    .setMessage("Please select a sheet first.")
-                    .setPositiveButton("OK",null)
-                    .show();
-        }
-        */
-    }
-
-    protected void openHostGame(View v) {
-        Toast.makeText(
-                getApplicationContext(),
-                "Not implemented yet.",
-                Toast.LENGTH_SHORT
-        ).show();
-
-        /*
-        Intent intent = new Intent(this,HostGameActivity.class);
+    public void openJoinGame(View v) {
+        Intent intent = new Intent(this, JoinActivity.class);
         intent.putExtra("USERNAME",username);
         intent.putExtra("ISUSER",true);
         intent.putExtra("SHEET",sheet);
 
         startActivity(intent);
-        */
-
     }
 
-    protected void openLoadCharacter(View v) {
-        Toast.makeText(
-                getApplicationContext(),
-                "Not implemented yet.",
-                Toast.LENGTH_SHORT
-        ).show();
+    public void openHostGame(View v) {
+        Intent intent = new Intent(this, HostActivity.class);
+        intent.putExtra("USERNAME",username);
+        intent.putExtra("ISUSER",true);
+        intent.putExtra("SHEET",sheet);
+
+        startActivity(intent);
     }
 
-    protected void openCreateCharacter(View v) {
+    public void openLoadCharacter(View v) {
+        Intent intent = new Intent(this, loadFromLocalActivity.class);
+        startActivity(intent);
+    }
+
+    public void openCreateCharacter(View v) {
 
         DBSheets dbSheets = new DBSheets(this);
         dbSheets.fetchSheetNameList(username); //onPostExecute starts new activity

@@ -4,4 +4,14 @@
     <string name="title_activity_play_menu">PlayMenuActivity</string>
     <string name="title_activity_host_join_game">HostJoinGameActivity</string>
     <string name="title_activity_create_character">CreateCharacterActivity</string>
+    <string name="action_save">Save Sheet</string>
+    <string name="title_activity_load_from_local">loadFromLocalActivity</string>
+    <string name="title_activity_host">Host Game</string>
+    <string name="title_activity_join">Join Game</string>
+    <string name="ip_address_message_default">IP Address Not Available!</string>
+    <string name="failed_to_get_text">Failed to get text.</string>
+    <string name="show_this_ip">Show this IP address to the players</string>
+    <string name="listening_for_players">Listening for players…</string>
+    <string name="please_restart">There was an issue with connecting players. Please restart.</string>
+    <string name="connect">Connect</string>
 </resources>

@@ -22,6 +22,7 @@ public class CreateCharacterLoadSheetActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_character_load_sheet);
 
+
         Bundle extras = getIntent().getExtras();
         username = extras.getString("Choose a sheet below");
 

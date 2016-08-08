@@ -70,12 +70,14 @@
             android:text="REGISTER"
             android:id="@+id/button2"
             android:layout_above="@+id/button"
-            android:layout_centerHorizontal="true"
             android:background="@color/buttonBackground"
             android:textColor="@color/buttonText"
             android:layout_marginTop="10dp"
             android:onClick="buttonRegister"
-            />
+            android:layout_alignRight="@+id/button"
+            android:layout_alignEnd="@+id/button"
+            android:layout_alignLeft="@+id/button"
+            android:layout_alignStart="@+id/button"/>
 
         <Button
             android:layout_width="wrap_content"
@@ -83,12 +85,14 @@
             android:text="LOG IN"
             android:id="@+id/button3"
             android:layout_above="@+id/button2"
-            android:layout_centerHorizontal="true"
             android:background="@color/buttonBackground"
             android:textColor="@color/buttonText"
             android:layout_marginTop="10dp"
             android:onClick="buttonLogin"
-            />
+            android:layout_alignRight="@+id/button2"
+            android:layout_alignEnd="@+id/button2"
+            android:layout_alignLeft="@+id/button2"
+            android:layout_alignStart="@+id/button2"/>
 
     </RelativeLayout>
 
