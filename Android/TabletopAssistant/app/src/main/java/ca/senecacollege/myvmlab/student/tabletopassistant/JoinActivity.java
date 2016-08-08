@@ -1,11 +1,10 @@
 package ca.senecacollege.myvmlab.student.tabletopassistant;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.Formatter;
@@ -26,15 +25,17 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class JoinActivity extends AppCompatActivity {
     public static ServerSocket joinServerSocket;
     public static Socket joinClientSocket;
 
-    EditText ipEntry = (EditText) findViewById(R.id.ipEntry);
-    EditText portEntry = (EditText) findViewById(R.id.portEntry);
-    Button connectButton = (Button) findViewById(R.id.connectButton);
+    EditText ipEntry;
+    EditText portEntry;
+    Button connectButton;
+    TextView waitMessage;
+    TextView ipLabel;
+    TextView portLabel;
 
     String hostIpAddress;
     String hostPortNumber;
@@ -56,6 +57,13 @@ public class JoinActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         context = this;
+
+        ipEntry = (EditText) findViewById(R.id.ipEntry);
+        portEntry = (EditText) findViewById(R.id.portEntry);
+        connectButton = (Button) findViewById(R.id.connectButton);
+        waitMessage = (TextView) findViewById(R.id.waitText);
+        ipLabel = (TextView) findViewById(R.id.ipLabel);
+        portLabel = (TextView) findViewById(R.id.portLabel);
     }
 
     public void connectToServer (View v) {
@@ -77,17 +85,23 @@ public class JoinActivity extends AppCompatActivity {
             try {
                 InetAddress address = InetAddress.getByName(hostIpAddress);
                 joinClientSocket = new Socket(address, Integer.parseInt(hostPortNumber));
-                String messageType = "createConnection";
-                sendMessage("{'messageType':" + messageType + ",'ip':" + clientIpAddress +
-                        ",'port':" + clientPortNumber + "}");
+                joinServerSocket = new ServerSocket(0);
+                Thread thread = new Thread(new ClientServerThread());
+                thread.start();
                 clientHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(context, "Connected!", Toast.LENGTH_LONG).show();
+                        clientPortNumber = String.valueOf(joinServerSocket.getLocalPort());
+                        WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
+                        clientIpAddress = Formatter.formatIpAddress(wm.getConnectionInfo()
+                                .getIpAddress());
+                        String messageType = "createConnection";
+                        sendMessage("{'messageType':" + messageType + ",'ip':" + clientIpAddress +
+                                ",'port':" + clientPortNumber + "}");
+                        connectButton.setEnabled(false);
+                        connectButton.setVisibility(View.INVISIBLE);
                     }
                 });
-                connectButton.setEnabled(false);
-                connectButton.setVisibility(View.INVISIBLE);
             } catch (Exception e) {
                 e.printStackTrace();
                 clientHandler.post(new Runnable() {
@@ -97,6 +111,27 @@ public class JoinActivity extends AppCompatActivity {
                         finish();
                     }
                 });
+            }
+        }
+    }
+
+    public class ClientServerThread implements Runnable {
+        @Override
+        public void run() {
+            Socket client = null;
+            try {
+                while (!Thread.currentThread().isInterrupted()) {
+                    try {
+                        client = joinServerSocket.accept();
+                        ClientCommThread clientCommThread = new ClientCommThread(client);
+                        new Thread(clientCommThread).start();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -123,7 +158,9 @@ public class JoinActivity extends AppCompatActivity {
                     clientHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            handleReceivedMessage(stringFromServer);
+                            if (stringFromServer != null) {
+                                handleReceivedMessage(stringFromServer);
+                            }
                         }
                     });
                 } catch (Exception e) {
@@ -137,8 +174,7 @@ public class JoinActivity extends AppCompatActivity {
         try {
             PrintWriter out = new PrintWriter(new BufferedWriter(
                     new OutputStreamWriter(joinClientSocket.getOutputStream())), true);
-            out.append(message);
-            out.flush();
+            out.println(message);
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(context, "Failed to send to server.", Toast.LENGTH_LONG).show();
@@ -146,7 +182,33 @@ public class JoinActivity extends AppCompatActivity {
     }
 
     public void handleReceivedMessage(String message) {
-
+        if (message != null && !message.equals("null")) {
+            try {
+                jsonFromServer = new JSONObject(message);
+                String messageType = jsonFromServer.getString("messageType");
+                if (messageType.equals("wait")) {
+                    waitMessage.setText(R.string.please_wait);
+                    ipEntry.setVisibility(View.INVISIBLE);
+                    portEntry.setVisibility(View.INVISIBLE);
+                    ipLabel.setVisibility(View.INVISIBLE);
+                    portLabel.setVisibility(View.INVISIBLE);
+                } else if (messageType.equals("newSheet")) {
+                    String newSheet = "";
+                    try {
+                        newSheet = jsonFromServer.getString("sheet");
+                        Intent intent = new Intent(context, SheetUI.class);
+                        intent.putExtra("loadType", "web");
+                        intent.putExtra("sheet", newSheet);
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(context, "Failed to load that sheet!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -163,137 +225,4 @@ public class JoinActivity extends AppCompatActivity {
             e1.printStackTrace();
         }
     }
-
-/*    EditText editText;
-    String ipAddress;
-    String port;
-    Socket socket;
-    ServerSocket serverSocket;
-    Context context;
-    Handler handler = new Handler();
-    String readString = "";
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_join);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        context = this;
-    }
-
-    public void connectSocket (View v) {
-        try {
-            editText = (EditText) findViewById(R.id.ipEntry);
-            ipAddress = editText.getText().toString();
-            editText = (EditText) findViewById(R.id.portEntry);
-            port = editText.getText().toString();
-
-            Thread thread = new Thread(new ClientThread());
-            thread.start();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(context, "Failed to start!", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    public void sendMessage() {
-        try {
-            serverSocket = new ServerSocket(0);
-
-            WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
-            String clientIp = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
-
-            String clientPort = String.valueOf(serverSocket.getLocalPort());
-
-            PrintWriter out = new PrintWriter(new BufferedWriter(
-                    new OutputStreamWriter(socket.getOutputStream())), true);
-            out.println("{'ip':" + clientIp + ",'port':" + clientPort + "}");
-
-            Thread thread = new Thread(new GetJsonThread());
-            thread.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(context, "Failed to send text.", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    public class GetJsonThread implements Runnable {
-        @Override
-        public void run() {
-            Socket client = null;
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    client = serverSocket.accept();
-                    CommThread commThread = new CommThread(client);
-                    new Thread(commThread).start();
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    public class CommThread implements Runnable {
-        private Socket socket;
-        private BufferedReader bufferedReader;
-
-        public CommThread(Socket socket) {
-            this.socket = socket;
-            try {
-                this.bufferedReader = new BufferedReader(
-                        new InputStreamReader(
-                                this.socket.getInputStream()));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void run() {
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    readString = bufferedReader.readLine();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            TextView textView = (TextView) findViewById(R.id.messageBox);
-                            textView.setText(readString);
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    public class ClientThread implements Runnable {
-        @Override
-        public void run() {
-            try {
-                InetAddress address = InetAddress.getByName(ipAddress);
-                socket = new Socket(address, Integer.parseInt(port));
-                sendMessage();
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(context, "Connected!", Toast.LENGTH_LONG).show();
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(context, "Failed to connect!", Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-        }
-    }
-*/
 }

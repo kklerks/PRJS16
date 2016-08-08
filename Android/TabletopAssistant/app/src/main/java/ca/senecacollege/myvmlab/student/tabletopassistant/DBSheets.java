@@ -48,8 +48,6 @@ public class DBSheets {
             String response = "";
             String parameters = "USERNAME=" + username[0] + "&ANDROID=YES";
 
-            //Log.d("doInBackground","Parameters:" + parameters);
-
             try {
                 url = new URL("http://myvmlab.senecacollege.ca:5311/design/sl.php");
 

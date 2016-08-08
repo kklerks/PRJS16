@@ -30,7 +30,7 @@
                     android:layout_height="match_parent"
                     android:background="@color/buttonBackground"
                     android:textColor="@color/buttonText"
-                    android:text="CurrentSheet"/>
+                    android:text="Choose A Mode"/>
 
 
             </LinearLayout>

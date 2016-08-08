@@ -34,14 +34,17 @@
         <activity
             android:name=".PlayMenuActivity"
             android:label="@string/title_activity_play_menu"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".HostJoinGameActivity"
             android:label="@string/title_activity_host_join_game"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".CreateCharacterLoadSheetActivity"
             android:label="@string/title_activity_create_character"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".SheetUI"
@@ -51,16 +54,19 @@
         <activity
             android:name=".loadFromLocalActivity"
             android:label="@string/title_activity_load_from_local"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
         <activity
             android:name=".HostActivity"
             android:label="@string/title_activity_host"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
         <activity
             android:name=".JoinActivity"
             android:label="@string/title_activity_join"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
     </application>

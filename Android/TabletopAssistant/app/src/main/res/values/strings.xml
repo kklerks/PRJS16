@@ -11,7 +11,9 @@
     <string name="ip_address_message_default">IP Address Not Available!</string>
     <string name="failed_to_get_text">Failed to get text.</string>
     <string name="show_this_ip">Show this IP address to the players</string>
-    <string name="listening_for_players">Listening for players…</string>
+    <string name="listening_for_players">Waiting for players…</string>
     <string name="please_restart">There was an issue with connecting players. Please restart.</string>
     <string name="connect">Connect</string>
+    <string name="please_wait">Please wait for the host to start the game…</string>
+    <string name="empty"> </string>
 </resources>

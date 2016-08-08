@@ -38,7 +38,8 @@
         android:onClick="openTutorial"
         android:text="TUTORIAL"
         android:textColor="@color/buttonText"
-        />
+        android:enabled="false"
+        android:alpha="0.5"/>
 
     <Button
         android:id="@+id/button6"
@@ -50,8 +51,9 @@
         android:background="@color/buttonBackground"
         android:onClick="openOptions"
         android:text="OPTIONS"
+        android:enabled="false"
         android:textColor="@color/buttonText"
-        />
+        android:alpha="0.5"/>
 
     <Button
         android:id="@+id/button7"
@@ -65,14 +67,5 @@
         android:text="PLAY"
         android:textColor="@color/buttonText"
         />
-
-
-
-
-
-
-
-
-
 
 </RelativeLayout>

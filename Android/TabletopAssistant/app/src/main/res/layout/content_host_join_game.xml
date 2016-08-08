@@ -47,22 +47,20 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="LOAD SAVED SHEET"
+        android:text="SOLO - CHARACTER"
         android:id="@+id/button10"
         android:layout_above="@+id/button9"
         android:background="@color/buttonBackground"
         android:textColor="@color/buttonText"
         android:layout_marginTop="10dp"
         android:onClick="openLoadCharacter"
-        android:layout_alignRight="@+id/button11"
-        android:layout_alignEnd="@+id/button11"
         android:layout_alignLeft="@+id/button11"
         android:layout_alignStart="@+id/button11"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="LOAD CREATED SHEET"
+        android:text="SOLO - NEW SHEET"
         android:id="@+id/button11"
         android:layout_above="@+id/button10"
         android:layout_centerHorizontal="true"

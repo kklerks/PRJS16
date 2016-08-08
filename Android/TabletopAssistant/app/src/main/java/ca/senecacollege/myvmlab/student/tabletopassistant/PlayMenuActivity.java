@@ -7,6 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 public class PlayMenuActivity extends AppCompatActivity {
@@ -22,6 +23,12 @@ public class PlayMenuActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         username = extras.getString("USERNAME");
         isUser = extras.getBoolean("ISUSER");
+
+        if (!isUser) {
+            Button logoutButton = (Button) findViewById(R.id.button4);
+            logoutButton.setEnabled(false);
+            logoutButton.setAlpha((float) 0.5);
+        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.playMenuActivitytoolbar);
         setSupportActionBar(toolbar);

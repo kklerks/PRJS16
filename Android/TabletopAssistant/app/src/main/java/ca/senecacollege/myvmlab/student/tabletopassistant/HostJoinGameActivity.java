@@ -28,11 +28,12 @@ public class HostJoinGameActivity extends AppCompatActivity {
         isUser = extras.getBoolean("ISUSER");
         sheet = extras.getString("SHEET");
 
-        if (!isUser) {
+        /*if (!isUser) {
             Button button = (Button) findViewById(R.id.button9);
             button.setEnabled(false);
             button.setAlpha((float) 0.5);
-        }
+        }*/
+        //TODO Re-Enable this post-testing
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.hostJoinGameActivityToolbar);
         setSupportActionBar(toolbar);

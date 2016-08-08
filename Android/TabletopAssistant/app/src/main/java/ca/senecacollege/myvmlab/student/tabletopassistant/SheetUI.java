@@ -1,12 +1,17 @@
 package ca.senecacollege.myvmlab.student.tabletopassistant;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.Menu;
@@ -14,6 +19,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +38,7 @@ public class SheetUI extends AppCompatActivity {
     RelativeLayout playerLayout;
     float screenWidth, screenHeight, widthOffset, heightOffset;
     String sourceJson, loadType;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +48,8 @@ public class SheetUI extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         playerLayout = (RelativeLayout) findViewById(R.id.playerLayout);
+
+        context = this;
 
         loadType = getIntent().getExtras().getString("loadType");
         if ("web".equals(loadType)) {
@@ -78,8 +87,7 @@ public class SheetUI extends AppCompatActivity {
 
         if (id == R.id.action_save) {
             String newString = generateJson();
-            boolean ok = saveToLocal((String) this.getTitle(), newString);
-            Toast.makeText(this, ok ? "Saved" : "Save failed!", Toast.LENGTH_LONG).show();
+            promptCharacterName((String) this.getTitle(), newString);
         }
 
         return super.onOptionsItemSelected(item);
@@ -235,11 +243,40 @@ public class SheetUI extends AppCompatActivity {
         return true;
     };
 
-    public boolean saveToLocal (String fileName, String json) {
+    public void promptCharacterName (final String fileName, final String json) {
+        //Build layout for dialog
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        //username
+        final TextView characterText = new TextView(this);
+        characterText.setText("Character Name:");
+        layout.addView(characterText);
+        final EditText characterName = new EditText(this);
+        layout.addView(characterName);
+
+        //Display dialog
+        new AlertDialog.Builder(this)
+                .setTitle("Name Character")
+                .setView(layout)
+                .setNegativeButton("Cancel",null)
+                .setPositiveButton("Save",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                boolean ok = saveToLocal(fileName, json, characterName.getText().toString());
+                                Toast.makeText(context, ok ? "Saved" : "Failed to save", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                )
+                .show();
+    }
+
+    public boolean saveToLocal (String fileName, String json, String characterName) {
         try {
-            File directory = new File(getFilesDir(), "/sheets/");
+            File directory = new File(getFilesDir(), "/sheets/" + fileName + "/");
             directory.mkdirs();
-            FileOutputStream fileOutputStream = new FileOutputStream(new File(directory, fileName));
+            FileOutputStream fileOutputStream = new FileOutputStream(new File(directory, characterName));
             fileOutputStream.write(json.getBytes());
             fileOutputStream.close();
         } catch (Exception e) {
